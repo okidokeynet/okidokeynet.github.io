@@ -18,7 +18,7 @@ transform-style: preserve-3d;
 }
 .outermwp:hover .innermwp {
 transition: 0.9s;
-transform: rotate(180deg) rotateX(180deg) rotateY(180deg);
+transform: rotate(-180deg) rotateX(-180deg) rotateY(180deg);
 }
 </style>
-<a class="outermwp" href="mailto:okidokey@okidokey.net"><img class="innermwp" style="width: 10%" src="https://avatars.githubusercontent.com/u/XXXUIDXXX" /></a>
+<a class="outermwp" href="mailto:okidokey@okidokey.net"><img class="innermwp" style="width: 10%" src="https://avatars.githubusercontent.com/u/81443129" /></a>
