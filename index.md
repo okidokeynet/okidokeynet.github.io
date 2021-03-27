@@ -23,7 +23,7 @@ transform-style: preserve-3d;
 }
 .outermwp:hover .innermwp {
 transition: 5s;
-transform: rotate(0deg) rotateX(0deg) rotateY(0deg) rotateZ(1800deg);
+transform: rotate(0deg) rotateX(0deg) rotateY(1800deg) rotateZ(0deg);
 }
 </style>
 <a class="outermwp" href="mailto:okidokey@okidokey.net"><img class="innermwp" src="/favicon.ico" /></a>
