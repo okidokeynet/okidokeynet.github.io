@@ -5,12 +5,17 @@ title: null
 ---
 <style>
 .outermwp {
-position: absolute;
-top: 50%;
-left: 50%;
-margin-right: -50%;
-display: inline-block;
-background: transparent;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-right: -50%;
+  transform: translate(-50%, -50%);
+  display: inline-block;
+  background: transparent;
+}
+img.innermwp {
+  max-width: 25vw;
+  max-height: 25vh;
 }
 .innermwp {
 transition: transform 0.6s;
