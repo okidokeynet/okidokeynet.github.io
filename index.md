@@ -7,7 +7,7 @@ title: null
 body {
     height: 100vh;
     margin: 0;
-    background: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(115,115,115,1) 100%);
+    background-disabled: radial-gradient(circle, rgba(255,255,255,1) 0%, rgba(115,115,115,1) 100%);
 }
 
 .outerlync {
