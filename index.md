@@ -21,4 +21,4 @@ transition: 0.9s;
 transform: rotate(-180deg) rotateX(-180deg) rotateY(180deg);
 }
 </style>
-<a class="outermwp" href="mailto:okidokey@okidokey.net"><img class="innermwp" style="width: 10%" src="https://avatars.githubusercontent.com/u/81443129" /></a>
+<a class="outermwp" href="mailto:okidokey@okidokey.net"><img class="innermwp" src="/favicon.ico" /></a>
