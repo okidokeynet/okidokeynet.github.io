@@ -35,4 +35,4 @@ img.innerlync {
   transform: rotate(0deg) rotateX(0deg) rotateY(1800deg) rotateZ(0deg);
 }
 </style>
-<a class="outerlync" href="mailto:okidokey@okidokey.net"><img class="innerlync" src="/favicon.ico" /></a>
+<a class="outerlync" href="mailto:okidokey@okidokey.net"><img class="innerlync" src="https://www.okidokey.net/favicon.ico" /></a>
