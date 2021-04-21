@@ -1,0 +1,203 @@
+<html>
+    <head>
+    <meta charset="UTF-8">
+    <title>StarJunk</title>
+
+    <meta name="description" content="StarJunk search"/>
+
+    <script>
+    "use strict";
+
+    function escapeHtml(unsafe) {
+        return unsafe
+             .replace(/&/g, "&amp;")
+             .replace(/</g, "&lt;")
+             .replace(/>/g, "&gt;")
+             .replace(/"/g, "&quot;")
+             .replace(/'/g, "&#039;");
+     }
+
+    const recordHTML = function(record) {
+        let deleted = record['deleted'];
+        if (deleted !== false) { return; }
+
+        let fields = record.fields;
+        if (typeof fields !== 'object') {
+            return;
+        }
+
+        var keys = Object.keys(fields);
+        keys = keys.sort();
+
+        keys = [
+            "recordName",
+            "responseURL",
+            "indexDate",
+            "contentType",
+            "weight",
+            "langs",
+            "title",
+            "text",
+        ];
+        // console.log("loaded keys", keys);
+
+        var html = "";
+
+        keys.forEach(key => {
+            html += "<div class='searchResult'>";
+                html += "<strong>";
+                html += key;
+                html += ":</strong> ";
+                //html += "<em>";
+                if (typeof fields[key] === 'undefined') {
+                    // check the record along with the fields, so we can handle "recordName", "modifiedDate", etc.
+                    if (typeof record[key] === 'string') {
+                        html += record[key];
+                    } else {
+                        html += "NULL";
+                    }
+                } else if (key == 'indexDate') {
+                    html += new Date(fields[key].value);
+                } else if (key == 'responseURL') {
+                    let rlink = fields[key].value;
+                    html += "<a href=\"" + rlink + "\">" + rlink + "</a>";
+                } else if (key == 'text') {
+                    html += fields[key].value.length + " bytes";
+                    html += "<pre>" + escapeHtml(fields[key].value).replace(/\n/g, " ") + "</pre>";
+                } else if (typeof fields[key] === 'object') {
+                    html += fields[key].value;
+                } else {
+                    html += "" // nothing
+                }
+                //html += "</em>";
+        });
+        html += "</div>";
+        html += "<hr />";
+
+        return html;
+    }
+
+    let resultsLimit = 25;
+
+    /**
+     * This function is run immediately after CloudKit has loaded.
+     */
+     const initCloudKit = function() {
+        try {
+            CloudKit.configure({
+                logger: window.console,
+                containers: [{
+                    containerIdentifier: 'iCloud.net.tiqtiq.TiqTiq',
+                    environment: 'development',
+                    apiTokenAuth: {
+                        apiToken: 'a56fb0334eb8f142d81f36b4e59dd579d1407958f7084e2af48276a1514a9dcf',
+                    }
+                }]
+            });
+
+            // console.log("loaded cloudkit", CloudKit);
+
+            var container = CloudKit.getDefaultContainer();
+            // console.log("loaded cloudkit container", container);
+
+            var database = container.publicCloudDatabase; 
+            // console.log("loaded cloudkit database", database);
+
+            const params = new URLSearchParams(window.location.search);
+
+            // https://developer.apple.com/library/archive/documentation/DataManagement/Conceptual/CloudKitWebServicesReference/Types.html#//apple_ref/doc/uid/TP40015240-CH3-SW18
+            var filters = [];
+
+            // issue the query
+            const query_value = params.get('q');
+            if (query_value.length > 0) {
+                // pre-fill the search field
+                document.getElementById('searchField').value = query_value;
+
+                filters.push(
+                    {
+                        fieldName: 'text',
+                        comparator: 'CONTAINS_ALL_TOKENS',
+                        fieldValue: { value: query_value }
+                    }
+                );
+            }
+
+            var sortDescriptors = [];
+            sortDescriptors.push({ // most recent first
+                //"systemFieldName": "createdTimestamp",
+                "systemFieldName": "modifiedTimestamp",
+                "ascending": false
+            });
+
+
+            //document.getElementById('results').innerHTML = "Beep Beep. Boop Boop."
+
+            var query = {
+                recordType: 'Page',
+                resultsLimit: resultsLimit,
+                desiredKeys: null,
+                numbersAsStrings: false,
+                sortBy: sortDescriptors,
+                filterBy: filters
+            };
+
+            var recordResults = [];
+
+            const handleResponse = function(response) {
+                //console.log("record count", response.records.length);
+                //console.log("receive response", response, response.records);
+
+                response.records.forEach(element => {
+                    if (recordResults.length < resultsLimit) {  
+                        recordResults.push(element);
+                    }
+                });
+
+                if (response.moreComing && (recordResults.length < resultsLimit)) { // there are more results…
+                    console.log("executing continuation", response.continuationMarker);
+                    database.performQuery(response) // …so execute the continuation
+                        .then(function(response) {
+                            handleResponse(response);
+                        })
+                        .catch(function(error) {
+                            console.warn(error);
+                        });
+                } else {
+                    var resultsHTML = "";
+                    recordResults.forEach(element => {
+                        resultsHTML += recordHTML(element);
+                    });
+                    let html = resultsHTML;
+                    document.getElementById('results').innerHTML = html;
+                }
+            };
+
+            database.performQuery(query)
+                .then(function(response) {
+                    handleResponse(response);
+                })
+                .catch(function(error) {
+                    console.warn(error);
+                });
+        } catch (e) {
+            console.error("error loading cloudkit", e);
+        }
+    };
+    </script>
+    <script>
+        window.addEventListener('cloudkitloaded', initCloudKit);
+    </script>
+    <script async src="https://cdn.apple-cloudkit.com/ck/2/cloudkit.js"></script>
+    </head>
+
+    <body style="font-family: system-ui;">
+        <form>
+            <input id="searchField" style="width: 40%;" name="q" />
+            <input type="submit" value="Query" />
+        </form>
+        <hr />
+        <div id="results">
+        </div>
+    </body>
+</html>
