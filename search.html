@@ -1,13 +1,169 @@
 <html>
-
 <head>
     <meta charset="UTF-8">
     <title>Oki Dokey Search</title>
-
     <meta name="description" content="Oki Dokey Search" />
+
+    <style>
+    html, body {
+        filter: hue-rotate(310deg);
+        max-width: 100%;
+        /* overflow-x: hidden; */
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    div.pagelink {
+        width: 33vw !important;
+        white-space: normal; 
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+        white-space: pre; /* CSS 2.0 */
+        white-space: pre-wrap; /* CSS 2.1 */
+        white-space: pre-line; /* CSS 3.0 */
+        white-space: -pre-wrap; /* Opera 4-6 */
+        white-space: -o-pre-wrap; /* Opera 7 */
+        white-space: -moz-pre-wrap; /* Mozilla */
+        word-wrap: break-word; /* IE 5+ */
+    }
+
+
+    @media screen and (prefers-color-scheme: dark) {
+    /* body {
+        background: #2d3239;
+        color: #75715e;
+    }
+
+    h1 {
+        color: #e9d970;
+    } */
+    }
+
+    .recordKey {
+        width: 10vw;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-variant-caps: small-caps; 
+        text-align: right; 
+        font-size: 1em;
+        vertical-align: text-top;
+    }
+
+    .recordValue td {
+        width: 48vw;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: 1em;
+        overflow-wrap: break-word; 
+        white-space: normal; 
+    }
+
+
+
+    iframe.previewArea {
+        /* visibility: hidden; */
+        resize: both;
+    }
+
+    .searchMeta {
+    }
+
+    .searchResult {
+        width: 48vw;
+        margin-left: 1vw;
+        margin-right: 1vw;
+        overflow-x: hidden;
+    }
+
+    .previewArea {
+        width: 48vw;
+        margin-left: 1vw;
+        margin-right: 1vw;
+        height: 10em;
+        font-size: 1em;
+        border: 2px solid #cccccc;
+        border-radius: 5px; 
+        overflow: scroll; 
+        overflow-x: hidden;
+    }
+
+    textarea.accessibletext {
+        background-color: #00000006;
+        text-align: justify; 
+        hyphens: auto; 
+        overflow-wrap: break-word; 
+        white-space: normal; 
+    }
+
+
+    .previewArea::-webkit-scrollbar {
+		width: 12px;
+	}
+
+	.previewArea::-webkit-scrollbar-button {
+
+	}
+
+	.previewArea::-webkit-scrollbar-track {
+		-webkit-box-shadow: inset 0 0 3px rgba(0,0,0,0.5);
+		box-shadow: inset 0 0 3px rgba(0,0,0,0.5);
+		-webkit-border-radius: 5px;
+		border-radius: 5px;
+	}
+
+	.previewArea::-webkit-scrollbar-track-piece {
+
+	}
+
+	.previewArea::-webkit-scrollbar-thumb {
+		-webkit-border-radius: 5px;
+		border-radius: 5px;
+		background: rgba(#000000, 0.8);
+		-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+	}
+
+	.previewArea::-webkit-scrollbar-corner {
+
+	}
+
+	.previewArea::-webkit-resizer {
+
+	}
+    
+	.previewArea::-webkit-scrollbar-thumb:window-inactive {
+		background: rgba(#e89b4d, 0.4);
+	}
+    </style>
+</head>
+
+<body>
+    <div style="margin-left: 1vw; margin-right: 1vw; margin-top: 1em; margin-bottom: 1em;">
+
+    <form onsubmit="document.getElementById('summary').placeholder = 'searching…';">
+        <input id="searchField" style="width: 48vw;" placeholder="Search" name="q" autofocus />
+        <input id="searchSubmit" type="submit" name="ok" value="OkiDokey!" style="width: 10vw;" />
+        <input id="resultsLimitField" style="width: 40px" name="l" placeholder="limit" />
+        <input id="resultsDomainField" style="width: 100px" name="d" placeholder="host" />
+        <input id="summary" style="xxxwidth: 100px" placeholder="" disabled />
+        <input id="token" type="hidden" name="t"/>
+        <input id="countOnly" type="checkbox" name="c" value="1" style="display: none;" />
+        <!-- <small>count</small> -->
+        <input id="unindexed" type="checkbox" name="x" value="1" style="display: none;" />
+        <!-- <small>unindexed</small> -->
+    </form>
+    </div>
+    <hr />
+    <div id="results">
+    </div>
 
     <script>
         "use strict";
+
+        const params = new URLSearchParams(window.location.search);
+        const ok = typeof params.get('ok') === 'string';
+        document.getElementById('token').value = params.get('t');
 
         function escapeHtml(unsafe) {
             return unsafe
@@ -34,7 +190,7 @@
             if (type === 'text') {
                 textarea.hidden = false;
                 iframe.hidden = true;
-                iframe.src = null; // clear the iframe's source
+                iframe.src = 'about:blank'; // clear the iframe's source
             } else if (type === 'preview') {
                 textarea.hidden = true;
                 iframe.hidden = false;
@@ -42,7 +198,7 @@
             }
         }
 
-        const recordElement = function (record) {
+        const recordElement = function (record, deferSnippetRender) {
             let deleted = record['deleted'];
             if (deleted !== false) { return; }
 
@@ -63,9 +219,18 @@
 
             html += "<textarea id='textarea-" + rname + "' class='previewArea'>"
             let textObject = fields['text'];
-            if (typeof textObject === 'object') {
-                html += escapeHtml(textObject.value);
+            let snippet = (textObject || {}).value;
+            if (deferSnippetRender <= 0) {
+                if (typeof textObject === 'object') {
+                    html += escapeHtml(snippet);
+                }
+            } else { // fill in snippets after a delay
+                let updateSnippet = function () {
+                    (document.getElementById('textarea-' + rname) || {}).innerHTML = escapeHtml(snippet);
+                };
+                setTimeout(updateSnippet, deferSnippetRender);
             }
+
             html += "</textarea>";
             html += "<iframe hidden id='iframe-" + rname + "' class='previewArea' referrerpolicy='no-referrer' sandbox='allow-forms allow-same-origin' src='about:blank'></iframe>";
             html += "</div>";
@@ -75,8 +240,6 @@
 
             keys = [
                 "title",
-                //"recordName",
-                //"responseURL",
                 "indexDate",
                 "contentType",
                 "weight",
@@ -85,18 +248,19 @@
             ];
             // console.log("loaded keys", keys);
 
-            html += "<div class='searchResult'>";
-            html += "<div class='recordURL'>";
+            html += "<div class='xxxsearchResult'>";
 
-            html += "<div class='pagelink'><a class='pagelink' href='" + rlink + "'>" + rlink + "</a></div>";
-            html += "</div>";
+            html += "<table class='searchResult'>";
 
             keys.forEach(key => {
-                html += "<div class='recordKeys'>";
-                html += "<span style='font-variant-caps: small-caps;'>";
+                html += "<tr>";
+
+                html += "<td class='recordKey'>";
                 html += key;
-                html += ":</span> ";
-                //html += "<em>";
+                html += "</td>";
+
+                html += "<td class='recordValue'>";
+
                 if (typeof fields[key] === 'undefined') {
                     // check the record along with the fields, so we can handle "recordName", "modifiedDate", etc.
                     if (typeof record[key] === 'string') {
@@ -122,18 +286,42 @@
                 } else {
                     html += "" // nothing
                 }
-                //html += "</em>";
-                html += "</div>";
+                html += "</td>";
+                html += "</td>";
+
+                html += "</tr>";
             });
 
 
+            let previewButtonStyle = "";
+            let fopts = (((fields['frameOptions'] || {}).value) + '').toUpperCase();
+            if (fopts === 'SAMEORIGIN' || fopts === 'DENY') {
+                // when X-Frame-Options is SAMEORIGIN or DENY, iframe loading is prohibited
+                //console.log("FRAME", fopts, previewButtonStyle);
+                previewButtonStyle = "style='text-decoration: line-through;' title='Sandbox preview forbidden by server policy: " + fopts + "' disabled";
+            }
+
+            html += "<tr>";
+            html += "<td class='recordKey'>";
+            html += "Preview";
+            html += "</td>";
+
+            html += "<td class='recordValue'>";
+
             html += "<form>"; 
-            html += "<input type='radio' name='mode' value='text' onclick='changeMode(\"text\", \"" + rname + "\", \"" + rlink + "\")' checked />";
-            html += "<label for='text'>Text</label>";
-            html += "<input type='radio' name='mode' value='preview' onclick='changeMode(\"preview\", \"" + rname + "\", \"" + rlink + "\")'/>";
-            html += "<label for='preview'>Preview</label>";
+            html += "<input type='radio' name='mode' value='text' onclick='changeMode(\"text\", \"" + rname + "\", \"" + rlink + "\")' checked ><label for='text'>Snippet</label></input>"
+            html += "<br/>";
+            html += "<input type='radio' name='mode' value='preview' onclick='changeMode(\"preview\", \"" + rname + "\", \"" + rlink + "\")' " + previewButtonStyle + ">";
+            html += "<label for='preview' " + previewButtonStyle + ">Sandbox</label>";
+            html += "</input>"
+            html += "<br/>";
+
+            html += "<div class='pagelink'><a class='pagelink' href='" + rlink + "'>" + rlink + "</a></div>";
             html += "</form>"; 
 
+            html += "</td>";
+            html += "</tr>";
+            html += "</table>";
 
             html += "</div>"; // recordURL
 
@@ -143,20 +331,13 @@
 
         const performSearch = function () {
             let startTime = new Date();
-
             var container = CloudKit.getDefaultContainer();
-            // console.log("loaded cloudkit container", container);
-
             var database = container.publicCloudDatabase;
-            // console.log("loaded cloudkit database", database);
 
-            const params = new URLSearchParams(window.location.search);
-
-            // https://developer.apple.com/library/archive/documentation/DataManagement/Conceptual/CloudKitWebServicesReference/Types.html#//apple_ref/doc/uid/TP40015240-CH3-SW18
             var filters = [];
 
             var desiredKeys = null;
-            var defaultResultsLimit = '100';
+            var defaultResultsLimit = '25';
 
             const countOnly = params.get('c') === '1';
             document.getElementById('countOnly').checked = countOnly;
@@ -166,13 +347,30 @@
                 desiredKeys = ["indexDate"]; // request no keys; doesn't seem to have any effect!
             }
 
+            const unindexed = params.get('x') === '1';
+            document.getElementById('unindexed').checked = unindexed;
+
+            if (unindexed === true) {
+                console.log("unindexed");
+                filters.push({
+                        fieldName: 'indexDate',
+                        comparator: 'EQUALS',
+                        fieldValue: { value: 0 }
+                    });
+            } else {
+                filters.push({
+                        fieldName: 'indexDate',
+                        comparator: 'NOT_EQUALS',
+                        fieldValue: { value: 0 }
+                    });
+            }
+
             var resultsLimit = parseInt(params.get('l') || defaultResultsLimit);             
             document.getElementById('resultsLimitField').value = params.get('l');
 
             const resultsDomain = params.get('d') || '';
             if (resultsDomain.length > 0) {
                 document.getElementById('resultsDomainField').value = resultsDomain;
-                // https://developer.apple.com/library/archive/documentation/DataManagement/Conceptual/CloudKitWebServicesReference/Types.html#//apple_ref/doc/uid/TP40015240-CH3-SW15
                 filters.push({
                         fieldName: 'rhost',
                         comparator: 'BEGINS_WITH',
@@ -214,6 +412,7 @@
             let div = document.getElementById('results');
             div.innerHTML = "";
             var recordResults = [];
+            var deferSnippetRender = 0; // 500; // the number of ms before we will fill in the snippets; doesn't seem to improve performance
 
             const handleResponse = function (response) {
                 //console.log("record count", response.records.length);
@@ -221,10 +420,15 @@
 
                 var divhtml = "";
                 response.records.forEach(element => {
+                    //document.getElementById('summary').placeholder += "…";
+
                     if (recordResults.length < resultsLimit) {
                         recordResults.push(element);
                         if (countOnly === false) {
-                            divhtml += recordElement(element) + "<hr />";
+                            divhtml += recordElement(element, deferSnippetRender) + "<hr />";
+                            if (deferSnippetRender > 0) {
+                                deferSnippetRender += 500;
+                            }
                         }
                     }
                 });
@@ -237,7 +441,7 @@
                         .catch(function (error) { console.warn(error); });
                 } else {
                     let sum = document.getElementById('summary');
-                    sum.innerHTML = recordResults.length + " results in " + ((new Date().getTime() - startTime.getTime()) / 1000.0) + " seconds";
+                    sum.placeholder = recordResults.length + " results in " + ((new Date().getTime() - startTime.getTime()) / 1000.0) + " seconds";
                 }
             };
 
@@ -266,148 +470,22 @@
                         containerIdentifier: 'iCloud.net.tiqtiq.TiqTiq',
                         environment: 'development',
                         apiTokenAuth: {
-                            // note this only works with an origin of www.okidokey.net
-                            apiToken: 'a56fb0334eb8f142d81f36b4e59dd579d1407958f7084e2af48276a1514a9dcf',
+                            // note this only works with our origin host; use a local dev key in `t` for testing
+                            apiToken: params.get('t') || 'a56fb0334eb8f142d81f36b4e59dd579d1407958f7084e2af48276a1514a9dcf',
                         }
                     }]
                 });
 
                 // console.log("loaded cloudkit", CloudKit);
-                performSearch();
+                if (ok) {
+                    performSearch();
+                }
             } catch (e) {
                 console.error("error loading cloudkit", e);
             }
         };
-    </script>
-    <script>
         window.addEventListener('cloudkitloaded', initCloudKit);
     </script>
-    <script async src="https://cdn.apple-cloudkit.com/ck/2/cloudkit.js"></script>
-
-    <style>
-    html, body {
-        max-width: 100%;
-        /* overflow-x: hidden; */
-        font-family: system-ui;
-        margin: 0;
-        padding: 0;
-    }
-
-    div.pagelink {
-        /* width: 100px !important; */
-    }
-
-    a.pagelink {
-    overflow-wrap: break-word;
-    word-wrap: break-word;
-    }
-
-    @media screen and (prefers-color-scheme: dark) {
-    /* body {
-        background: #2d3239;
-        color: #75715e;
-    }
-
-    h1 {
-        color: #e9d970;
-    } */
-    }
-
-    .searchResult {
-        width: 48vw;
-        margin-left: 1vw;
-        margin-right: 1vw;
-    }
-
-    .searchMeta {
-
-    }
-
-    .recordKeys {
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-    }
-
-    iframe.previewArea {
-        /* visibility: hidden; */
-        resize: both;
-    }
-
-    .previewArea {
-        width: 48vw;
-        margin-left: 1vw;
-        margin-right: 1vw;
-        height: 10em;
-        font-size: 1em;
-        border: 2px solid #cccccc;
-        border-radius: 5px; 
-        overflow: scroll; 
-    }
-
-    textarea.accessibletext {
-        background-color: #00000006;
-        text-align: justify; 
-        hyphens: auto; 
-        overflow-wrap: break-word; 
-        white-space: normal; 
-    }
-
-    .previewArea::-webkit-scrollbar {
-		width: 12px;
-	}
-	.previewArea::-webkit-scrollbar-button {
-
-	}
-	.previewArea::-webkit-scrollbar-track {
-		-webkit-box-shadow: inset 0 0 3px rgba(0,0,0,0.5);
-		box-shadow: inset 0 0 3px rgba(0,0,0,0.5);
-		-webkit-border-radius: 5px;
-		border-radius: 5px;
-	}
-	.previewArea::-webkit-scrollbar-track-piece {
-
-	}
-	.previewArea::-webkit-scrollbar-thumb {
-		-webkit-border-radius: 5px;
-		border-radius: 5px;
-		background: rgba(#000000, 0.8);
-		-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
-	}
-	.previewArea::-webkit-scrollbar-corner {
-
-	}
-	.previewArea::-webkit-resizer {
-
-	}
-	.previewArea::-webkit-scrollbar-thumb:window-inactive {
-		background: rgba(#e89b4d, 0.4);
-	}
-
-    </style>
-</head>
-
-<body>
-    <div style="margin: 1em;">
-
-    <form>
-        <input id="searchField" style="width: 48vw;" name="q" />
-        <input type="submit" value="Query" />
-        <small>limit:</small>
-        <input id="resultsLimitField" style="width: 40px" name="l" />
-        <small>domain:</small>
-        <input id="resultsDomainField" style="width: 100px" name="d" />
-        <small>count:</small>
-        <input id="countOnly" type="checkbox" name="c" value="1" />
-        <small>
-            <span id="summary">
-            </span>
-        </small>
-    </form>
-    </div>
-    <hr />
-    <div id="results">
-    </div>
+    <script src="https://cdn.apple-cloudkit.com/ck/2/cloudkit.js"></script>
 </body>
-
 </html>
