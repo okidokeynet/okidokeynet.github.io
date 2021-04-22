@@ -1,106 +1,153 @@
 <html>
-    <head>
+
+<head>
     <meta charset="UTF-8">
     <title>Oki Dokey Search</title>
 
-    <meta name="description" content="Oki Dokey Search"/>
+    <meta name="description" content="Oki Dokey Search" />
 
     <script>
-    "use strict";
+        "use strict";
 
-    function escapeHtml(unsafe) {
-        return unsafe
-             .replace(/&/g, "&amp;")
-             .replace(/</g, "&lt;")
-             .replace(/>/g, "&gt;")
-             .replace(/"/g, "&quot;")
-             .replace(/'/g, "&#039;");
-     }
-
-    const recordHTML = function(record) {
-        let deleted = record['deleted'];
-        if (deleted !== false) { return; }
-
-        let fields = record.fields;
-        if (typeof fields !== 'object') {
-            return;
+        function escapeHtml(unsafe) {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
         }
 
-        var keys = Object.keys(fields);
-        keys = keys.sort();
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
 
-        keys = [
-            "recordName",
-            "responseURL",
-            "indexDate",
-            "contentType",
-            "weight",
-            "langs",
-            "title",
-            "text",
-        ];
-        // console.log("loaded keys", keys);
+        function reverseString(str) {
+            return str.split("").reverse().join("");
+        }
 
-        var html = "";
+        function changeMode(type, recordName, rlink) {
+            console.log("changeMode", type, recordName);
+            let textarea = document.getElementById('textarea-' + recordName);
+            let iframe = document.getElementById('iframe-' + recordName);
 
-        keys.forEach(key => {
+            if (type === 'text') {
+                textarea.hidden = false;
+                iframe.hidden = true;
+                iframe.src = null; // clear the iframe's source
+            } else if (type === 'preview') {
+                textarea.hidden = true;
+                iframe.hidden = false;
+                iframe.src = rlink;
+            }
+        }
+
+        const recordElement = function (record) {
+            let deleted = record['deleted'];
+            if (deleted !== false) { return; }
+
+            let fields = record.fields;
+            if (typeof fields !== 'object') {
+                console.warn("record.fields was not an object!");
+                return;
+            }
+            
+            // the record's URL, which is either the 'responseURL', or the 'recordName' if it isn't set
+            let rname = record['recordName'] || '';
+            let rlink = (fields['responseURL'] || {}).value || ("https://" + rname);
+
+            var html = "";
+            html += "<div style='display: flex;'>";
+
+            html += "<div class='searchMeta'>";
+
+            html += "<textarea id='textarea-" + rname + "' class='previewArea'>"
+            let textObject = fields['text'];
+            if (typeof textObject === 'object') {
+                html += escapeHtml(textObject.value);
+            }
+            html += "</textarea>";
+            html += "<iframe hidden id='iframe-" + rname + "' class='previewArea' referrerpolicy='no-referrer' sandbox='allow-forms allow-same-origin' src='about:blank'></iframe>";
+            html += "</div>";
+
+            var keys = Object.keys(fields);
+            keys = keys.sort();
+
+            keys = [
+                "title",
+                //"recordName",
+                //"responseURL",
+                "indexDate",
+                "contentType",
+                "weight",
+                "text",
+                "langs",
+            ];
+            // console.log("loaded keys", keys);
+
             html += "<div class='searchResult'>";
-                html += "<strong>";
+            html += "<div class='recordURL'>";
+
+            html += "<div class='pagelink'><a class='pagelink' href='" + rlink + "'>" + rlink + "</a></div>";
+            html += "</div>";
+
+            keys.forEach(key => {
+                html += "<div class='recordKeys'>";
+                html += "<span style='font-variant-caps: small-caps;'>";
                 html += key;
-                html += ":</strong> ";
+                html += ":</span> ";
                 //html += "<em>";
                 if (typeof fields[key] === 'undefined') {
                     // check the record along with the fields, so we can handle "recordName", "modifiedDate", etc.
                     if (typeof record[key] === 'string') {
                         html += record[key];
                     } else {
-                        html += "NULL";
+                        html += "<span style='font-variant-caps: small-caps;'>null</span>";
                     }
+                } else if (key == 'title') {
+                    html += "<strong>";
+                    html += escapeHtml(fields[key].value);
+                    html += "</strong>";
                 } else if (key == 'indexDate') {
                     html += new Date(fields[key].value);
-                } else if (key == 'responseURL') {
-                    let rlink = fields[key].value;
-                    html += "<a href=\"" + rlink + "\">" + rlink + "</a>";
                 } else if (key == 'text') {
-                    html += fields[key].value.length + " bytes";
-                    html += "<pre>" + escapeHtml(fields[key].value).replace(/\n/g, " ") + "</pre>";
+                    let textlen = fields[key].value.length;
+                    html += textlen + " bytes";
+                    let weight = (fields['weight'] || {}).value;
+                    if (typeof weight === 'number') {
+                        html += " (" + (textlen / weight) + "%)";
+                    }
                 } else if (typeof fields[key] === 'object') {
                     html += fields[key].value;
                 } else {
                     html += "" // nothing
                 }
                 //html += "</em>";
-        });
-        html += "</div>";
-        html += "<hr />";
-
-        return html;
-    }
-
-    let resultsLimit = 25;
-
-    /**
-     * This function is run immediately after CloudKit has loaded.
-     */
-     const initCloudKit = function() {
-        try {
-            CloudKit.configure({
-                logger: window.console,
-                containers: [{
-                    containerIdentifier: 'iCloud.net.tiqtiq.TiqTiq',
-                    environment: 'development',
-                    apiTokenAuth: {
-                        apiToken: 'a56fb0334eb8f142d81f36b4e59dd579d1407958f7084e2af48276a1514a9dcf',
-                    }
-                }]
+                html += "</div>";
             });
 
-            // console.log("loaded cloudkit", CloudKit);
+
+            html += "<form>"; 
+            html += "<input type='radio' name='mode' value='text' onclick='changeMode(\"text\", \"" + rname + "\", \"" + rlink + "\")' checked />";
+            html += "<label for='text'>Text</label>";
+            html += "<input type='radio' name='mode' value='preview' onclick='changeMode(\"preview\", \"" + rname + "\", \"" + rlink + "\")'/>";
+            html += "<label for='preview'>Preview</label>";
+            html += "</form>"; 
+
+
+            html += "</div>"; // recordURL
+
+            html += "</div>"; // searchResult
+            return html;
+        }
+
+        const performSearch = function () {
+            let startTime = new Date();
 
             var container = CloudKit.getDefaultContainer();
             // console.log("loaded cloudkit container", container);
 
-            var database = container.publicCloudDatabase; 
+            var database = container.publicCloudDatabase;
             // console.log("loaded cloudkit database", database);
 
             const params = new URLSearchParams(window.location.search);
@@ -108,19 +155,42 @@
             // https://developer.apple.com/library/archive/documentation/DataManagement/Conceptual/CloudKitWebServicesReference/Types.html#//apple_ref/doc/uid/TP40015240-CH3-SW18
             var filters = [];
 
-            // issue the query
-            const query_value = params.get('q');
-            if (query_value.length > 0) {
-                // pre-fill the search field
-                document.getElementById('searchField').value = query_value;
+            var desiredKeys = null;
+            var defaultResultsLimit = '100';
 
-                filters.push(
-                    {
+            const countOnly = params.get('c') === '1';
+            document.getElementById('countOnly').checked = countOnly;
+            if (countOnly === true) {
+                console.log("countOnly");
+                defaultResultsLimit = '999';
+                desiredKeys = ["indexDate"]; // request no keys; doesn't seem to have any effect!
+            }
+
+            var resultsLimit = parseInt(params.get('l') || defaultResultsLimit);             
+            document.getElementById('resultsLimitField').value = params.get('l');
+
+            const resultsDomain = params.get('d') || '';
+            if (resultsDomain.length > 0) {
+                document.getElementById('resultsDomainField').value = resultsDomain;
+                // https://developer.apple.com/library/archive/documentation/DataManagement/Conceptual/CloudKitWebServicesReference/Types.html#//apple_ref/doc/uid/TP40015240-CH3-SW15
+                filters.push({
+                        fieldName: 'rhost',
+                        comparator: 'BEGINS_WITH',
+                        fieldValue: { value: reverseString(resultsDomain) }
+                    });
+            }
+
+            // issue the query
+            const queryString = params.get('q') || '';
+            if (queryString.length > 0) {
+                // pre-fill the search field
+                document.getElementById('searchField').value = queryString;
+
+                filters.push({
                         fieldName: 'text',
                         comparator: 'CONTAINS_ALL_TOKENS',
-                        fieldValue: { value: query_value }
-                    }
-                );
+                        fieldValue: { value: queryString }
+                    });
             }
 
             var sortDescriptors = [];
@@ -130,74 +200,214 @@
                 "ascending": false
             });
 
-
-            //document.getElementById('results').innerHTML = "Beep Beep. Boop Boop."
+            //document.getElementById('results').innerHTML = "Searching…"
 
             var query = {
                 recordType: 'Page',
                 resultsLimit: resultsLimit,
-                desiredKeys: null,
+                desiredKeys: desiredKeys,
                 numbersAsStrings: false,
                 sortBy: sortDescriptors,
                 filterBy: filters
             };
 
+            let div = document.getElementById('results');
+            div.innerHTML = "";
             var recordResults = [];
 
-            const handleResponse = function(response) {
+            const handleResponse = function (response) {
                 //console.log("record count", response.records.length);
                 //console.log("receive response", response, response.records);
 
+                var divhtml = "";
                 response.records.forEach(element => {
-                    if (recordResults.length < resultsLimit) {  
+                    if (recordResults.length < resultsLimit) {
                         recordResults.push(element);
+                        if (countOnly === false) {
+                            divhtml += recordElement(element) + "<hr />";
+                        }
                     }
                 });
+                div.innerHTML = divhtml; // much faster to set it all at once
 
                 if (response.moreComing && (recordResults.length < resultsLimit)) { // there are more results…
                     console.log("executing continuation", response.continuationMarker);
                     database.performQuery(response) // …so execute the continuation
-                        .then(function(response) {
-                            handleResponse(response);
-                        })
-                        .catch(function(error) {
-                            console.warn(error);
-                        });
+                        .then(function (response) { handleResponse(response); })
+                        .catch(function (error) { console.warn(error); });
                 } else {
-                    var resultsHTML = "";
-                    recordResults.forEach(element => {
-                        resultsHTML += recordHTML(element);
-                    });
-                    let html = resultsHTML;
-                    document.getElementById('results').innerHTML = html;
+                    let sum = document.getElementById('summary');
+                    sum.innerHTML = recordResults.length + " results in " + ((new Date().getTime() - startTime.getTime()) / 1000.0) + " seconds";
                 }
             };
 
             database.performQuery(query)
-                .then(function(response) {
-                    handleResponse(response);
-                })
-                .catch(function(error) {
-                    console.warn(error);
+                .then(function (response) { handleResponse(response); })
+                .catch(function (error) { console.warn(error); });
+        };
+
+        /**
+         * This function is run immediately after CloudKit has loaded.
+         * 
+         * Data Size Limits: These are the limits on the size of data sent to and from the CloudKit server.
+         *
+         *  Maximum number of operations in a request: 200
+         *  Maximum number of records in a response: 200
+         *  Maximum number of tokens in a request: 200
+         *  Maximum record size (not including Asset fields): 1 MB
+         *  Maximum file size of an Asset field: 50 MB
+         *  Maximum number of source references to a single target where the action is delete self: 750
+         */
+        const initCloudKit = function () {
+            try {
+                CloudKit.configure({
+                    logger: window.console,
+                    containers: [{
+                        containerIdentifier: 'iCloud.net.tiqtiq.TiqTiq',
+                        environment: 'development',
+                        apiTokenAuth: {
+                            // note this only works with an origin of www.okidokey.net
+                            apiToken: 'a56fb0334eb8f142d81f36b4e59dd579d1407958f7084e2af48276a1514a9dcf',
+                        }
+                    }]
                 });
-        } catch (e) {
-            console.error("error loading cloudkit", e);
-        }
-    };
+
+                // console.log("loaded cloudkit", CloudKit);
+                performSearch();
+            } catch (e) {
+                console.error("error loading cloudkit", e);
+            }
+        };
     </script>
     <script>
         window.addEventListener('cloudkitloaded', initCloudKit);
     </script>
     <script async src="https://cdn.apple-cloudkit.com/ck/2/cloudkit.js"></script>
-    </head>
 
-    <body style="font-family: system-ui;">
-        <form>
-            <input id="searchField" style="width: 40%;" name="q" />
-            <input type="submit" value="Query" />
-        </form>
-        <hr />
-        <div id="results">
-        </div>
-    </body>
+    <style>
+    html, body {
+        max-width: 100%;
+        /* overflow-x: hidden; */
+        font-family: system-ui;
+        margin: 0;
+        padding: 0;
+    }
+
+    div.pagelink {
+        /* width: 100px !important; */
+    }
+
+    a.pagelink {
+    overflow-wrap: break-word;
+    word-wrap: break-word;
+    }
+
+    @media screen and (prefers-color-scheme: dark) {
+    /* body {
+        background: #2d3239;
+        color: #75715e;
+    }
+
+    h1 {
+        color: #e9d970;
+    } */
+    }
+
+    .searchResult {
+        width: 48vw;
+        margin-left: 1vw;
+        margin-right: 1vw;
+    }
+
+    .searchMeta {
+
+    }
+
+    .recordKeys {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    iframe.previewArea {
+        /* visibility: hidden; */
+        resize: both;
+    }
+
+    .previewArea {
+        width: 48vw;
+        margin-left: 1vw;
+        margin-right: 1vw;
+        height: 10em;
+        font-size: 1em;
+        border: 2px solid #cccccc;
+        border-radius: 5px; 
+        overflow: scroll; 
+    }
+
+    textarea.accessibletext {
+        background-color: #00000006;
+        text-align: justify; 
+        hyphens: auto; 
+        overflow-wrap: break-word; 
+        white-space: normal; 
+    }
+
+    .previewArea::-webkit-scrollbar {
+		width: 12px;
+	}
+	.previewArea::-webkit-scrollbar-button {
+
+	}
+	.previewArea::-webkit-scrollbar-track {
+		-webkit-box-shadow: inset 0 0 3px rgba(0,0,0,0.5);
+		box-shadow: inset 0 0 3px rgba(0,0,0,0.5);
+		-webkit-border-radius: 5px;
+		border-radius: 5px;
+	}
+	.previewArea::-webkit-scrollbar-track-piece {
+
+	}
+	.previewArea::-webkit-scrollbar-thumb {
+		-webkit-border-radius: 5px;
+		border-radius: 5px;
+		background: rgba(#000000, 0.8);
+		-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
+	}
+	.previewArea::-webkit-scrollbar-corner {
+
+	}
+	.previewArea::-webkit-resizer {
+
+	}
+	.previewArea::-webkit-scrollbar-thumb:window-inactive {
+		background: rgba(#e89b4d, 0.4);
+	}
+
+    </style>
+</head>
+
+<body>
+    <div style="margin: 1em;">
+
+    <form>
+        <input id="searchField" style="width: 48vw;" name="q" />
+        <input type="submit" value="Query" />
+        <small>limit:</small>
+        <input id="resultsLimitField" style="width: 40px" name="l" />
+        <small>domain:</small>
+        <input id="resultsDomainField" style="width: 100px" name="d" />
+        <small>count:</small>
+        <input id="countOnly" type="checkbox" name="c" value="1" />
+        <small>
+            <span id="summary">
+            </span>
+        </small>
+    </form>
+    </div>
+    <hr />
+    <div id="results">
+    </div>
+</body>
+
 </html>
