@@ -6,7 +6,7 @@
 
     <style>
     html, body {
-        filter: hue-rotate(310deg);
+        /* filter: hue-rotate(310deg); */
         max-width: 100%;
         /* overflow-x: hidden; */
         font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
@@ -60,13 +60,6 @@
         white-space: normal; 
     }
 
-
-
-    iframe.previewArea {
-        /* visibility: hidden; */
-        resize: both;
-    }
-
     .searchMeta {
     }
 
@@ -83,53 +76,65 @@
         margin-right: 1vw;
         height: 10em;
         font-size: 1em;
-        border: 2px solid #cccccc;
-        border-radius: 5px; 
+        scroll-behavior: smooth;
         overflow: scroll; 
         overflow-x: hidden;
     }
 
-    textarea.accessibletext {
-        background-color: #00000006;
+    iframe.previewArea {
+        /* visibility: hidden; */
+        background-color: lemonchiffon;
+        resize: both;
+        padding: 0;
+        border: 0; /* otherwise the border is different from the textarea */
+        box-shadow: inset 0 0 1px;
+        /* border: 0; */
+        /* inset: 0; */
+    }
+
+    textarea.previewArea {
+        padding: 0.5em;
+        border-radius: 5px;
+        border: 2px rgba(#000000, 0.5);
+        scrollbar-width: thin;
+        background-color: aliceblue;
         text-align: justify; 
         hyphens: auto; 
         overflow-wrap: break-word; 
         white-space: normal; 
+        text-align: justify;
+        white-space: pre-line;
+        -moz-text-align-last: left;
+        text-align-last: left;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
     }
-
 
     .previewArea::-webkit-scrollbar {
 		width: 12px;
 	}
 
 	.previewArea::-webkit-scrollbar-button {
-
 	}
 
 	.previewArea::-webkit-scrollbar-track {
 		-webkit-box-shadow: inset 0 0 3px rgba(0,0,0,0.5);
 		box-shadow: inset 0 0 3px rgba(0,0,0,0.5);
-		-webkit-border-radius: 5px;
 		border-radius: 5px;
 	}
 
 	.previewArea::-webkit-scrollbar-track-piece {
-
 	}
 
 	.previewArea::-webkit-scrollbar-thumb {
-		-webkit-border-radius: 5px;
 		border-radius: 5px;
 		background: rgba(#000000, 0.8);
 		-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
 	}
 
 	.previewArea::-webkit-scrollbar-corner {
-
 	}
 
 	.previewArea::-webkit-resizer {
-
 	}
     
 	.previewArea::-webkit-scrollbar-thumb:window-inactive {
@@ -142,10 +147,12 @@
     <div style="margin-left: 1vw; margin-right: 1vw; margin-top: 1em; margin-bottom: 1em;">
 
     <form onsubmit="document.getElementById('summary').placeholder = 'searching…';">
-        <input id="searchField" style="width: 48vw;" placeholder="Search" name="q" autofocus />
-        <input id="searchSubmit" type="submit" name="ok" value="OkiDokey!" style="width: 10vw;" />
+        <input id="searchField" style="width: 37vw;" placeholder="Search terms" name="q" autofocus type="text" aria-autocomplete="both" aria-haspopup="false" autocapitalize="off" autocomplete="off" autocorrect="off" role="combobox" spellcheck="false" aria-label="Search"/>
+        <input id="searchSubmit" type="submit" name="ok" value="Search" style="width: 10vw; padding-right: 1wv;" />
         <input id="resultsLimitField" style="width: 40px" name="l" placeholder="limit" />
         <input id="resultsDomainField" style="width: 100px" name="d" placeholder="host" />
+        <input id="mimeTypeField" style="width: 100px" name="m" placeholder="type" />
+        
         <input id="summary" style="xxxwidth: 100px" placeholder="" disabled />
         <input id="token" type="hidden" name="t"/>
         <input id="countOnly" type="checkbox" name="c" value="1" style="display: none;" />
@@ -188,13 +195,15 @@
             let iframe = document.getElementById('iframe-' + recordName);
 
             if (type === 'text') {
-                textarea.hidden = false;
                 iframe.hidden = true;
-                iframe.src = 'about:blank'; // clear the iframe's source
+                textarea.hidden = false;
+                //iframe.src = 'about:blank'; // clear the iframe's source
             } else if (type === 'preview') {
                 textarea.hidden = true;
                 iframe.hidden = false;
-                iframe.src = rlink;
+                if (iframe.src !== rlink) {
+                    iframe.src = rlink;
+                }  
             }
         }
 
@@ -217,7 +226,7 @@
 
             html += "<div class='searchMeta'>";
 
-            html += "<textarea id='textarea-" + rname + "' class='previewArea'>"
+            html += "<textarea id='textarea-" + rname + "' class='previewArea' readonly>"
             let textObject = fields['text'];
             let snippet = (textObject || {}).value;
             if (deferSnippetRender <= 0) {
@@ -242,7 +251,9 @@
                 "title",
                 "indexDate",
                 "contentType",
+                "statusCode",
                 "weight",
+                "height",
                 "text",
                 "langs",
             ];
@@ -310,7 +321,9 @@
 
             html += "<form>"; 
             html += "<input type='radio' name='mode' value='text' onclick='changeMode(\"text\", \"" + rname + "\", \"" + rlink + "\")' checked ><label for='text'>Snippet</label></input>"
-            html += "<br/>";
+
+            html += "&nbsp;";
+
             html += "<input type='radio' name='mode' value='preview' onclick='changeMode(\"preview\", \"" + rname + "\", \"" + rlink + "\")' " + previewButtonStyle + ">";
             html += "<label for='preview' " + previewButtonStyle + ">Sandbox</label>";
             html += "</input>"
@@ -337,7 +350,7 @@
             var filters = [];
 
             var desiredKeys = null;
-            var defaultResultsLimit = '25';
+            var defaultResultsLimit = '10';
 
             const countOnly = params.get('c') === '1';
             document.getElementById('countOnly').checked = countOnly;
@@ -363,10 +376,19 @@
                         comparator: 'NOT_EQUALS',
                         fieldValue: { value: 0 }
                     });
+                    filters.push({
+                        fieldName: 'weight',
+                        comparator: 'GREATER_THAN',
+                        fieldValue: { value: 0 }
+                    });
             }
 
-            var resultsLimit = parseInt(params.get('l') || defaultResultsLimit);             
-            document.getElementById('resultsLimitField').value = params.get('l');
+            let lim = params.get('l');
+            document.getElementById('resultsLimitField').value = lim;
+            var resultsLimit = null;
+            if (typeof lim === 'string' && parseInt(lim) > 0) {
+                resultsLimit = Math.max(1, parseInt(lim || defaultResultsLimit)); 
+            } 
 
             const resultsDomain = params.get('d') || '';
             if (resultsDomain.length > 0) {
@@ -375,6 +397,16 @@
                         fieldName: 'rhost',
                         comparator: 'BEGINS_WITH',
                         fieldValue: { value: reverseString(resultsDomain) }
+                    });
+            }
+
+            const resultsMIME = params.get('m') || '';
+            if (resultsMIME.length > 0) {
+                document.getElementById('mimeTypeField').value = resultsMIME;
+                filters.push({
+                        fieldName: 'rmime',
+                        comparator: 'BEGINS_WITH',
+                        fieldValue: { value: reverseString(resultsMIME) }
                     });
             }
 
@@ -422,7 +454,7 @@
                 response.records.forEach(element => {
                     //document.getElementById('summary').placeholder += "…";
 
-                    if (recordResults.length < resultsLimit) {
+                    if (resultsLimit === null || recordResults.length < resultsLimit) {
                         recordResults.push(element);
                         if (countOnly === false) {
                             divhtml += recordElement(element, deferSnippetRender) + "<hr />";
@@ -434,14 +466,15 @@
                 });
                 div.innerHTML = divhtml; // much faster to set it all at once
 
-                if (response.moreComing && (recordResults.length < resultsLimit)) { // there are more results…
+                if (response.moreComing && resultsLimit !== null && (recordResults.length < resultsLimit)) { // there are more results…
                     console.log("executing continuation", response.continuationMarker);
                     database.performQuery(response) // …so execute the continuation
                         .then(function (response) { handleResponse(response); })
                         .catch(function (error) { console.warn(error); });
                 } else {
                     let sum = document.getElementById('summary');
-                    sum.placeholder = recordResults.length + " results in " + ((new Date().getTime() - startTime.getTime()) / 1000.0) + " seconds";
+                    let plus = (resultsLimit == null || recordResults.length >= resultsLimit) && response.moreComing == true ? "+" : "";
+                    sum.placeholder = recordResults.length + plus + " results in " + ((new Date().getTime() - startTime.getTime()) / 1000.0) + " seconds";
                 }
             };
 
