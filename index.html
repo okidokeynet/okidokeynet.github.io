@@ -187,6 +187,10 @@
         </form>
     </div>
     <hr />
+
+    <div id="message">
+    </div>
+
     <div id="results">
     </div>
 
@@ -446,7 +450,7 @@
                 });
             }
 
-            let orient = params.get('o'); // TODO: update the orient radio box
+            let orient = params.get('o') || 'l'; // TODO: update the orient radio box
             // document.getElementById('resultsLimitField').value = lim;
             // var resultsLimit = null;
             // if (typeof lim === 'string' && parseInt(lim) > 0) {
@@ -462,7 +466,7 @@
 
             let snip = params.get('s');
             document.getElementById('snippetLengthField').value = snip;
-            var snipLength = 1024 * 2; // Number.max;
+            var snipLength = 1024 * 10; // Number.max;
             if (typeof slen === 'string' && parseInt(slen) > 0) {
                 snipLength = Math.max(1, parseInt(slen));
                 console.log("snipLength", snipLength);
@@ -588,21 +592,57 @@
                         apiTokenAuth: {
                             // note this only works with our origin host; use a local dev key in `t` for testing
                             apiToken: params.get('t') || 'a56fb0334eb8f142d81f36b4e59dd579d1407958f7084e2af48276a1514a9dcf',
+                            persist: true, // Sets a cookie.
+                            signInButton: {
+                                id: 'apple-sign-in-button',
+                                theme: 'black' // Other options: 'white', 'white-with-outline'.
+                            },
+                            signOutButton: {
+                                id: 'apple-sign-out-button',
+                                theme: 'black'
+                            }
                         }
                     }]
                 });
 
+                // console.log("loaded cloudkit", CloudKit);
+
+                function gotoAuthenticatedState(userIdentity) {
+                    var name = userIdentity.nameComponents;
+                    
+                    if(name) {
+                        document.getElementById('message').innerHTML = ('Welcome, ' + name.givenName);    
+                    } else {
+                        document.getElementById('message').innerHTML = ('Welcome!');
+                    }
+
+                    // document.getElementById('message').innerHTML += " You can search now.";
+                }
+
+                function gotoUnauthenticatedState(error) {
+
+                    if(error && error.ckErrorCode === 'AUTH_PERSIST_ERROR') {
+                    window.showDialogForPersistError();
+                    }
+
+                    document.getElementById('message').innerHTML = ("Apple <a href='https://www.apple.com/icloud/'>iCloud</a> account required.");
+                }
+
+                CloudKit.getDefaultContainer()
+                    .whenUserSignsIn()
+                    .then(gotoAuthenticatedState)
+                    .catch(gotoUnauthenticatedState);
+
+
                 CloudKit.getDefaultContainer().setUpAuth().then(function(userInfo) {
                     console.log("setupAuth:", userInfo);
+                    if (ok) {
+                        document.getElementById('summary').placeholder = 'OK: Searching……';
+                        document.title = "OK: " + (params.get('q') || 'Search');
+                        setTimeout(performSearch, 0);
+                    }
                 });
 
-                // console.log("loaded cloudkit", CloudKit);
-                if (ok) {
-                    document.getElementById('summary').placeholder = 'OK: Searching……';
-                    document.title = "OK: " + (params.get('q') || 'Search');
-
-                    setTimeout(performSearch, 0);
-                }
             } catch (e) {
                 console.error("error loading cloudkit", e);
             }
