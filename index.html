@@ -5,7 +5,7 @@
     <meta name="description" content="Oki Dokey Search" />
 
     <style>
-    html, body {
+    body {
         /* filter: hue-rotate(310deg); */
         max-width: 100%;
         /* overflow-x: hidden; */
@@ -13,6 +13,15 @@
         margin: 0;
         padding: 0;
     }
+
+    /* body {
+            background-color: lightpink;
+         }
+         @media screen and (max-width: 420px) {
+            body {
+               background-color: lightblue;
+            }
+         } */
 
     div.pagelink {
         width: 33vw !important;
@@ -71,10 +80,10 @@
     }
 
     .previewArea {
+        height: 18em;
         width: 48vw;
         margin-left: 1vw;
         margin-right: 1vw;
-        height: 10em;
         font-size: 1em;
         scroll-behavior: smooth;
         overflow: scroll; 
@@ -149,6 +158,7 @@
     <form onsubmit="document.getElementById('summary').placeholder = 'searching…';">
         <input id="searchField" style="width: 37vw;" placeholder="Search terms" name="q" autofocus type="text" aria-autocomplete="both" aria-haspopup="false" autocapitalize="off" autocomplete="off" autocorrect="off" role="combobox" spellcheck="false" aria-label="Search"/>
         <input id="searchSubmit" type="submit" name="ok" value="Search" style="width: 10vw; padding-right: 1wv;" />
+        <input id="snippetLengthField" style="width: 40px" name="s" placeholder="snip" />
         <input id="resultsLimitField" style="width: 40px" name="l" placeholder="limit" />
         <input id="resultsDomainField" style="width: 100px" name="d" placeholder="host" />
         <input id="mimeTypeField" style="width: 100px" name="m" placeholder="type" />
@@ -196,18 +206,17 @@
 
             if (type === 'text') {
                 iframe.hidden = true;
+                iframe.innerHTML = null;
                 textarea.hidden = false;
                 //iframe.src = 'about:blank'; // clear the iframe's source
             } else if (type === 'preview') {
                 textarea.hidden = true;
+                iframe.innerHTML = "<iframe class='previewArea' referrerpolicy='no-referrer' sandbox='allow-forms allow-same-origin' src='about:blank src='" + rlink + "'></iframe>";
                 iframe.hidden = false;
-                if (iframe.src !== rlink) {
-                    iframe.src = rlink;
-                }  
             }
         }
 
-        const recordElement = function (record, deferSnippetRender) {
+        const recordElement = function (record, snippetRenderTime, snipLength) {
             let deleted = record['deleted'];
             if (deleted !== false) { return; }
 
@@ -226,22 +235,27 @@
 
             html += "<div class='searchMeta'>";
 
-            html += "<textarea id='textarea-" + rname + "' class='previewArea' readonly>"
+            html += "<textarea id='textarea-" + rname + "' class='previewArea' placeholder='Loading accessible snippet…' readonly>"
+            html += "";
             let textObject = fields['text'];
-            let snippet = (textObject || {}).value;
-            if (deferSnippetRender <= 0) {
+            var snippet = (textObject || {}).value;
+            snippet = escapeHtml(snippet.substring(0, snipLength));
+
+            if (snippetRenderTime <= 0) {
                 if (typeof textObject === 'object') {
-                    html += escapeHtml(snippet);
+                    html += snippet;
                 }
             } else { // fill in snippets after a delay
                 let updateSnippet = function () {
-                    (document.getElementById('textarea-' + rname) || {}).innerHTML = escapeHtml(snippet);
+                    (document.getElementById('textarea-' + rname) || {}).innerHTML = snippet;
                 };
-                setTimeout(updateSnippet, deferSnippetRender);
+                setTimeout(updateSnippet, snippetRenderTime);
             }
 
             html += "</textarea>";
-            html += "<iframe hidden id='iframe-" + rname + "' class='previewArea' referrerpolicy='no-referrer' sandbox='allow-forms allow-same-origin' src='about:blank'></iframe>";
+
+            html += "<div id='iframe-" + rname + "'></div>";
+
             html += "</div>";
 
             var keys = Object.keys(fields);
@@ -304,7 +318,7 @@
             });
 
 
-            let previewButtonStyle = "";
+            let previewButtonStyle = "title='Preview URL in private script-less sandbox'";
             let fopts = (((fields['frameOptions'] || {}).value) + '').toUpperCase();
             if (fopts === 'SAMEORIGIN' || fopts === 'DENY') {
                 // when X-Frame-Options is SAMEORIGIN or DENY, iframe loading is prohibited
@@ -324,7 +338,7 @@
 
             html += "&nbsp;";
 
-            html += "<input type='radio' name='mode' value='preview' onclick='changeMode(\"preview\", \"" + rname + "\", \"" + rlink + "\")' " + previewButtonStyle + ">";
+            html += "<input type='radio' name='mode' value='preview' title='Preview accessible text snippet' onclick='changeMode(\"preview\", \"" + rname + "\", \"" + rlink + "\")' " + previewButtonStyle + ">";
             html += "<label for='preview' " + previewButtonStyle + ">Sandbox</label>";
             html += "</input>"
             html += "<br/>";
@@ -352,7 +366,6 @@
             var desiredKeys = null;
             var defaultResultsLimit = '10';
 
-            
             const countOnly = params.get('c') === '1';
             document.getElementById('countOnly').checked = countOnly;
             if (countOnly === true) {
@@ -388,7 +401,15 @@
             document.getElementById('resultsLimitField').value = lim;
             var resultsLimit = null;
             if (typeof lim === 'string' && parseInt(lim) > 0) {
-                resultsLimit = Math.max(1, parseInt(lim || defaultResultsLimit)); 
+                resultsLimit = Math.max(1, parseInt(lim)); 
+            } 
+
+            let snip = params.get('s');
+            document.getElementById('snippetLengthField').value = snip;
+            var snipLength = 1024; // Int.max;
+            if (typeof slen === 'string' && parseInt(slen) > 0) {
+                snipLength = Math.max(1, parseInt(slen));
+                console.log("snipLength", snipLength);
             } 
 
             const resultsDomain = params.get('d') || '';
@@ -445,7 +466,9 @@
             let div = document.getElementById('results');
             div.innerHTML = "";
             var recordResults = [];
-            var deferSnippetRender = 0; // 500; // the number of ms before we will fill in the snippets; doesn't seem to improve performance
+            var deferElementRender = 0; // 300; // the number of ms before we show the elements
+            var snippetRenderTime = 0; // 200; // the initial snippet delay; incremented by deferSnippetRender
+            var deferSnippetRender = 0; // 800; // the number of ms before we fill in the snippets textarea
 
             const handleResponse = function (response) {
                 //console.log("record count", response.records.length);
@@ -458,14 +481,14 @@
                     if (resultsLimit === null || recordResults.length < resultsLimit) {
                         recordResults.push(element);
                         if (countOnly === false) {
-                            divhtml += recordElement(element, deferSnippetRender) + "<hr />";
-                            if (deferSnippetRender > 0) {
-                                deferSnippetRender += 500;
+                            divhtml += recordElement(element, snippetRenderTime, snipLength) + "<hr />";
+                            if (deferSnippetRender > 0 && snippetRenderTime > 0) {
+                                snippetRenderTime += deferSnippetRender;
                             }
                         }
                     }
                 });
-                div.innerHTML = divhtml; // much faster to set it all at once
+                document.getElementById('results').innerHTML = divhtml; // much faster to set it all at once
 
                 if (response.moreComing && resultsLimit !== null && (recordResults.length < resultsLimit)) { // there are more results…
                     console.log("executing continuation", response.continuationMarker);
