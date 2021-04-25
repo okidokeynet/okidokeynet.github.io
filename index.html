@@ -1,20 +1,23 @@
 <html>
+
 <head>
     <meta charset="UTF-8">
-    <title>Oki Dokey Search</title>
-    <meta name="description" content="Oki Dokey Search" />
+    <title>OK: Search</title>
+
+    <meta name="description"
+        content="I don't want to sell anything, buy anything, or process anything as a career. I don't want to sell anything bought or processed, or buy anything sold or processed, or process anything sold, bought, or processed, or repair anything sold, bought, or processed. You know, as a career, I don't want to do that." />
 
     <style>
-    body {
-        /* filter: hue-rotate(310deg); */
-        max-width: 100%;
-        /* overflow-x: hidden; */
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-        margin: 0;
-        padding: 0;
-    }
+        body {
+            /* filter: hue-rotate(310deg); */
+            max-width: 100%;
+            /* overflow-x: hidden; */
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
 
-    /* body {
+        /* body {
             background-color: lightpink;
          }
          @media screen and (max-width: 420px) {
@@ -23,157 +26,173 @@
             }
          } */
 
-    div.pagelink {
-        width: 33vw !important;
-        white-space: normal; 
-        overflow-wrap: break-word;
-        word-wrap: break-word;
-        white-space: pre; /* CSS 2.0 */
-        white-space: pre-wrap; /* CSS 2.1 */
-        white-space: pre-line; /* CSS 3.0 */
-        white-space: -pre-wrap; /* Opera 4-6 */
-        white-space: -o-pre-wrap; /* Opera 7 */
-        white-space: -moz-pre-wrap; /* Mozilla */
-        word-wrap: break-word; /* IE 5+ */
-    }
+        div.pagelink {
+            /* width: 33vw; */
+            white-space: normal;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            white-space: pre-line;
+            word-wrap: break-word;
+        }
 
 
-    @media screen and (prefers-color-scheme: dark) {
-    /* body {
-        background: #2d3239;
-        color: #75715e;
-    }
+        @media screen and (prefers-color-scheme: dark) {
+            /* body {
+                background: #2d3239;
+                color: #75715e;
+            }
 
-    h1 {
-        color: #e9d970;
-    } */
-    }
+            h1 {
+                color: #e9d970;
+            } */
+        }
 
-    .recordKey {
-        width: 10vw;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        font-variant-caps: small-caps; 
-        text-align: right; 
-        font-size: 1em;
-        vertical-align: text-top;
-    }
+        .searchMeta { }
 
-    .recordValue td {
-        width: 48vw;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        font-size: 1em;
-        overflow-wrap: break-word; 
-        white-space: normal; 
-    }
+        .halfWidth {
+            width: 48vw;
+            margin-left: 1vw;
+            margin-right: 1vw;
+        }
 
-    .searchMeta {
-    }
+        .fullWidth {
+            width: 98vw;
+            margin-left: 1vw;
+            margin-right: 1vw;
+        }
 
-    .searchResult {
-        width: 48vw;
-        margin-left: 1vw;
-        margin-right: 1vw;
-        overflow-x: hidden;
-    }
+        table.searchResult {
+            table-layout: fixed;
+            display: block;
+            /* width: 200px; */
+            background-color: lightsalmon;
+            border-spacing: 0.5px;
+            overflow-x: hidden;
+            text-overflow: ellipsis;
+        }
 
-    .previewArea {
-        height: 18em;
-        width: 48vw;
-        margin-left: 1vw;
-        margin-right: 1vw;
-        font-size: 1em;
-        scroll-behavior: smooth;
-        overflow: scroll; 
-        overflow-x: hidden;
-    }
+        td.recordKey  {
+            width: 10vw;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-variant-caps: small-caps;
+            text-align: right;
+            font-size: 1em;
+            vertical-align: text-top;
+        }
 
-    iframe.previewArea {
-        /* visibility: hidden; */
-        background-color: lemonchiffon;
-        resize: both;
-        padding: 0;
-        border: 0; /* otherwise the border is different from the textarea */
-        box-shadow: inset 0 0 1px;
-        /* border: 0; */
-        /* inset: 0; */
-    }
+        td.recordValue  {
+            background-color: lightyellow;
+            font-size: 1em;
 
-    textarea.previewArea {
-        padding: 0.5em;
-        border-radius: 5px;
-        border: 2px rgba(#000000, 0.5);
-        scrollbar-width: thin;
-        background-color: aliceblue;
-        text-align: justify; 
-        hyphens: auto; 
-        overflow-wrap: break-word; 
-        white-space: normal; 
-        text-align: justify;
-        white-space: pre-line;
-        -moz-text-align-last: left;
-        text-align-last: left;
-        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    }
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: normal;
+            word-wrap: break-word; 
+            overflow-wrap: break-word;
+        }
 
-    .previewArea::-webkit-scrollbar {
-		width: 12px;
-	}
+        .previewArea {
+            height: 18em;
+            font-size: 1em;
+            scroll-behavior: smooth;
+            overflow: scroll;
+            overflow-x: hidden;
+        }
 
-	.previewArea::-webkit-scrollbar-button {
-	}
+        iframe.previewArea {
+            /* visibility: hidden; */
+            background-color: lemonchiffon;
+            resize: both;
+            padding: 0;
+            border: 0;
+            /* otherwise the border is different from the textarea */
+            box-shadow: inset 0 0 1px;
+            /* border: 0; */
+            /* inset: 0; */
+        }
 
-	.previewArea::-webkit-scrollbar-track {
-		-webkit-box-shadow: inset 0 0 3px rgba(0,0,0,0.5);
-		box-shadow: inset 0 0 3px rgba(0,0,0,0.5);
-		border-radius: 5px;
-	}
+        textarea.previewArea {
+            padding: 0.5em;
+            border-radius: 5px;
+            border: 2px rgba(#000000, 0.5);
+            scrollbar-width: thin;
+            background-color: aliceblue;
+            text-align: justify;
+            hyphens: auto;
+            overflow-wrap: break-word;
+            white-space: normal;
+            text-align: justify;
+            white-space: pre-line;
+            -moz-text-align-last: left;
+            text-align-last: left;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
 
-	.previewArea::-webkit-scrollbar-track-piece {
-	}
+        .previewArea::-webkit-scrollbar {
+            width: 12px;
+        }
 
-	.previewArea::-webkit-scrollbar-thumb {
-		border-radius: 5px;
-		background: rgba(#000000, 0.8);
-		-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.5);
-	}
+        .previewArea::-webkit-scrollbar-button {}
 
-	.previewArea::-webkit-scrollbar-corner {
-	}
+        .previewArea::-webkit-scrollbar-track {
+            -webkit-box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.5);
+            box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.5);
+            border-radius: 5px;
+        }
 
-	.previewArea::-webkit-resizer {
-	}
-    
-	.previewArea::-webkit-scrollbar-thumb:window-inactive {
-		background: rgba(#e89b4d, 0.4);
-	}
+        .previewArea::-webkit-scrollbar-track-piece {}
+
+        .previewArea::-webkit-scrollbar-thumb {
+            border-radius: 5px;
+            background: rgba(#000000, 0.8);
+            -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+        }
+
+        .previewArea::-webkit-scrollbar-corner {}
+
+        .previewArea::-webkit-resizer {}
+
+        .previewArea::-webkit-scrollbar-thumb:window-inactive {
+            background: rgba(#e89b4d, 0.4);
+        }
     </style>
 </head>
 
 <body>
     <div style="margin-left: 1vw; margin-right: 1vw; margin-top: 1em; margin-bottom: 1em;">
 
-    <form onsubmit="document.getElementById('summary').placeholder = 'searching…';">
-        <input id="searchField" style="width: 37vw;" placeholder="Search terms" name="q" autofocus type="text" aria-autocomplete="both" aria-haspopup="false" autocapitalize="off" autocomplete="off" autocorrect="off" role="combobox" spellcheck="false" aria-label="Search"/>
-        <input id="searchSubmit" type="submit" name="ok" value="Search" style="width: 10vw; padding-right: 1wv;" />
-        <input id="snippetLengthField" style="width: 40px" name="s" placeholder="snip" />
-        <input id="resultsLimitField" style="width: 40px" name="l" placeholder="limit" />
-        <input id="resultsDomainField" style="width: 100px" name="d" placeholder="host" />
-        <input id="mimeTypeField" style="width: 100px" name="m" placeholder="type" />
-        
-        <input id="summary" style="xxxwidth: 100px" placeholder="" disabled />
-        <input id="token" type="hidden" name="t"/>
-        <input id="countOnly" type="checkbox" name="c" value="1" style="display: none;" />
-        <!-- <small>count</small> -->
-        <input id="unindexed" type="checkbox" name="x" value="1" style="display: none;" />
-        <!-- <small>unindexed</small> -->
-    </form>
+        <form onsubmit="document.getElementById('summary').placeholder = 'OK: Searching…';">
+            <input id="searchField" style="width: 37vw;" placeholder="Search terms" name="q" autofocus type="text"
+                aria-autocomplete="both" aria-haspopup="false" autocapitalize="off" autocomplete="off" autocorrect="off"
+                role="combobox" spellcheck="false" aria-label="Search" title="Individual search terms separated by spaces" />
+            <input id="searchSubmit" type="submit" name="ok" value="Search" style="width: 10vw; padding-right: 1wv;" title="Search" />
+            <input id="snippetLengthField" style="width: 4em" name="s" placeholder="sniplength" title="The length of the accessible text snippet in characters" />
+            <input id="resultsLimitField" style="width: 4em" name="l" placeholder="limit" title="The maximum number of results to return for a search" />
+            <input id="mimeTypeField" style="width: 6em" name="m" placeholder="type" title="The MIME type of file to search for, such as text/html or application/pdf" />
+            <input id="resultsDomainField" style="width: 10em" name="d" placeholder="host" title="The domain name constraint" />
+
+            <!-- Orientation of interface  -->
+            <input id='orient-t' type='radio' name='o' value='t' title="metadata above"><label>↑</label></input>
+            <input id='orient-l' type='radio' name='o' value='l' title="metadata left"><label>←</label></input>
+            <input id='orient-r' type='radio' name='o' value='r' title="metadata right"><label>→</label></input>
+            <input id='orient-b' type='radio' name='o' value='b' title="metadata below"><label>↓</label></input>
+            <input id='orient-h' type='radio' name='o' value='h' title="metadata hidden"><label>x</label></input>
+
+            <input id="summary" placeholder="OK: Ready" disabled />
+            <input id="token" type="hidden" name="t" />
+            <input id="countOnly" type="checkbox" name="c" value="1" style="display: none;" />
+            <input id="unindexed" type="checkbox" name="x" value="1" style="display: none;" />
+        </form>
     </div>
     <hr />
     <div id="results">
     </div>
+
+    <h5 data-bind="text: displayUserName"></h5>
+    <div id="apple-sign-in-button"></div>
+    <div id="apple-sign-out-button"></div>
 
     <script>
         "use strict";
@@ -211,12 +230,12 @@
                 //iframe.src = 'about:blank'; // clear the iframe's source
             } else if (type === 'preview') {
                 textarea.hidden = true;
-                iframe.innerHTML = "<iframe class='previewArea' referrerpolicy='no-referrer' sandbox='allow-forms allow-same-origin' src='about:blank src='" + rlink + "'></iframe>";
+                iframe.innerHTML = "<iframe class='previewArea halfWidth' referrerpolicy='no-referrer' sandbox='allow-forms allow-same-origin' src='about:blank src='" + rlink + "'></iframe>";
                 iframe.hidden = false;
             }
         }
 
-        const recordElement = function (record, snippetRenderTime, snipLength) {
+        const recordElement = function (record, snippetRenderTime, snipLength, orient) {
             let deleted = record['deleted'];
             if (deleted !== false) { return; }
 
@@ -225,133 +244,162 @@
                 console.warn("record.fields was not an object!");
                 return;
             }
-            
+
             // the record's URL, which is either the 'responseURL', or the 'recordName' if it isn't set
             let rname = record['recordName'] || '';
             let rlink = (fields['responseURL'] || {}).value || ("https://" + rname);
 
-            var html = "";
-            html += "<div style='display: flex;'>";
+            var html = "<div style='display: flex;'>";
 
-            html += "<div class='searchMeta'>";
+            function addSnippetSection(widthClass) {
+                html += "<div class='searchMeta'>";
 
-            html += "<textarea id='textarea-" + rname + "' class='previewArea' placeholder='Loading accessible snippet…' readonly>"
-            html += "";
-            let textObject = fields['text'];
-            var snippet = (textObject || {}).value;
-            snippet = escapeHtml(snippet.substring(0, snipLength));
+                html += "<textarea id='textarea-" + rname + "' class='previewArea " + widthClass + "' placeholder='Loading accessible snippet…' readonly>"
+                html += "";
+                let textObject = fields['text'];
+                var snippet = (textObject || {}).value;
+                snippet = escapeHtml(snippet.substring(0, snipLength));
 
-            if (snippetRenderTime <= 0) {
-                if (typeof textObject === 'object') {
-                    html += snippet;
+                if (snippetRenderTime <= 0) {
+                    if (typeof textObject === 'object') {
+                        html += snippet;
+                    }
+                } else { // fill in snippets after a delay
+                    let updateSnippet = function () {
+                        (document.getElementById('textarea-' + rname) || {}).innerHTML = snippet;
+                    };
+                    setTimeout(updateSnippet, snippetRenderTime);
                 }
-            } else { // fill in snippets after a delay
-                let updateSnippet = function () {
-                    (document.getElementById('textarea-' + rname) || {}).innerHTML = snippet;
-                };
-                setTimeout(updateSnippet, snippetRenderTime);
+
+                html += "</textarea>";
+
+                html += "<div id='iframe-" + rname + "'></div>";
+
+                html += "</div>";
             }
 
-            html += "</textarea>";
+            function addMetadataSection(widthClass) {
 
-            html += "<div id='iframe-" + rname + "'></div>";
+                var keys = Object.keys(fields);
+                keys = keys.sort();
 
-            html += "</div>";
+                keys = [
+                    "title",
+                    "lastModified",
+                    "indexDate",
+                    "et", // "etag" was a reserved name
+                    "contentType",
+                    "statusCode",
+                    "weight",
+                    "height",
+                    "text",
+                    "langs",
+                ];
+                // console.log("loaded keys", keys);
 
-            var keys = Object.keys(fields);
-            keys = keys.sort();
+                html += "<div>";
 
-            keys = [
-                "title",
-                "indexDate",
-                "contentType",
-                "statusCode",
-                "weight",
-                "height",
-                "text",
-                "langs",
-            ];
-            // console.log("loaded keys", keys);
+                html += "<table class='searchResult " + widthClass + "'>";
 
-            html += "<div class='xxxsearchResult'>";
+                keys.forEach(key => {
+                    html += "<tr>";
 
-            html += "<table class='searchResult'>";
+                    html += "<td class='recordKey'>";
+                    html += key;
+                    html += "</td>";
 
-            keys.forEach(key => {
+                    html += "<td class='recordValue'>";
+
+                    if (typeof fields[key] === 'undefined') {
+                        // check the record along with the fields, so we can handle "recordName", "modifiedDate", etc.
+                        if (typeof record[key] === 'string') {
+                            html += record[key];
+                        } else {
+                            html += "<span style='font-variant-caps: small-caps;'>null</span>";
+                        }
+                    } else if (key == 'title') {
+                        html += "<strong>";
+                        html += escapeHtml(fields[key].value);
+                        html += "</strong>";
+                    } else if (key == 'indexDate' || key == 'lastModified') {
+                        html += new Date(fields[key].value);
+                    } else if (key == 'text') {
+                        let textlen = fields[key].value.length;
+                        html += textlen + " bytes";
+                        let weight = (fields['weight'] || {}).value;
+                        if (typeof weight === 'number') {
+                            html += " (" + (textlen / weight) + "%)";
+                        }
+                    } else if (typeof fields[key] === 'object') {
+                        html += fields[key].value;
+                    } else {
+                        html += "" // nothing
+                    }
+                    html += "</td>";
+
+                    html += "</tr>";
+                });
+
+                let previewButtonStyle = "title='Preview URL in private script-less sandbox'";
+                let fopts = (((fields['frameOptions'] || {}).value) + '').toUpperCase();
+                if (fopts === 'SAMEORIGIN' || fopts === 'DENY') {
+                    // when X-Frame-Options is SAMEORIGIN or DENY, iframe loading is prohibited
+                    //console.log("FRAME", fopts, previewButtonStyle);
+                    previewButtonStyle = "style='text-decoration: line-through;' title='Sandbox preview forbidden by server policy: " + fopts + "' disabled";
+                }
+
                 html += "<tr>";
 
                 html += "<td class='recordKey'>";
-                html += key;
+                html += "Preview";
                 html += "</td>";
 
                 html += "<td class='recordValue'>";
 
-                if (typeof fields[key] === 'undefined') {
-                    // check the record along with the fields, so we can handle "recordName", "modifiedDate", etc.
-                    if (typeof record[key] === 'string') {
-                        html += record[key];
-                    } else {
-                        html += "<span style='font-variant-caps: small-caps;'>null</span>";
-                    }
-                } else if (key == 'title') {
-                    html += "<strong>";
-                    html += escapeHtml(fields[key].value);
-                    html += "</strong>";
-                } else if (key == 'indexDate') {
-                    html += new Date(fields[key].value);
-                } else if (key == 'text') {
-                    let textlen = fields[key].value.length;
-                    html += textlen + " bytes";
-                    let weight = (fields['weight'] || {}).value;
-                    if (typeof weight === 'number') {
-                        html += " (" + (textlen / weight) + "%)";
-                    }
-                } else if (typeof fields[key] === 'object') {
-                    html += fields[key].value;
-                } else {
-                    html += "" // nothing
-                }
-                html += "</td>";
-                html += "</td>";
+                html += "<form>";
+                html += "<input type='radio' name='mode' value='text' onclick='changeMode(\"text\", \"" + rname + "\", \"" + rlink + "\")' checked ><label for='text'>Snippet</label></input>"
 
+                html += "&nbsp;";
+
+                html += "<input type='radio' name='mode' value='preview' title='Preview accessible text snippet' onclick='changeMode(\"preview\", \"" + rname + "\", \"" + rlink + "\")' " + previewButtonStyle + ">";
+                html += "<label for='preview' " + previewButtonStyle + ">Sandbox</label>";
+                html += "</input>"
+                html += "<br/>";
+
+                html += "<div class='pagelink'><a class='pagelink' href='" + rlink + "'>" + rlink + "</a></div>";
+                html += "</form>";
+
+                html += "</td>";
                 html += "</tr>";
-            });
+                html += "</table>";
 
-
-            let previewButtonStyle = "title='Preview URL in private script-less sandbox'";
-            let fopts = (((fields['frameOptions'] || {}).value) + '').toUpperCase();
-            if (fopts === 'SAMEORIGIN' || fopts === 'DENY') {
-                // when X-Frame-Options is SAMEORIGIN or DENY, iframe loading is prohibited
-                //console.log("FRAME", fopts, previewButtonStyle);
-                previewButtonStyle = "style='text-decoration: line-through;' title='Sandbox preview forbidden by server policy: " + fopts + "' disabled";
+                html += "</div>"; // recordURL
+            }
+            
+            (document.getElementById('orient-' + orient) || {}).checked = true;
+            if (orient == "l") {
+                addMetadataSection('halfWidth');
+                addSnippetSection('halfWidth');
+            } else if (orient == "r") {
+                addSnippetSection('halfWidth');
+                addMetadataSection('halfWidth');
+            } else if (orient == "t") {
+                addSnippetSection('fullWidth');
+                html += "</div><div style='display: flex; margin-top: 1em;'>";
+                addMetadataSection('fullWidth');
+            } else if (orient == "b") {
+                addSnippetSection('fullWidth');
+                html += "</div><div style='display: flex; margin-top: 1em;'>";
+                addMetadataSection('fullWidth');
+            } else if (orient == "x") {
+                addSnippetSection('fullWidth');                
+            } else {
+                // html += "bad orient: " + orient;
+                addSnippetSection();
+                addMetadataSection();
             }
 
-            html += "<tr>";
-            html += "<td class='recordKey'>";
-            html += "Preview";
-            html += "</td>";
-
-            html += "<td class='recordValue'>";
-
-            html += "<form>"; 
-            html += "<input type='radio' name='mode' value='text' onclick='changeMode(\"text\", \"" + rname + "\", \"" + rlink + "\")' checked ><label for='text'>Snippet</label></input>"
-
-            html += "&nbsp;";
-
-            html += "<input type='radio' name='mode' value='preview' title='Preview accessible text snippet' onclick='changeMode(\"preview\", \"" + rname + "\", \"" + rlink + "\")' " + previewButtonStyle + ">";
-            html += "<label for='preview' " + previewButtonStyle + ">Sandbox</label>";
-            html += "</input>"
-            html += "<br/>";
-
-            html += "<div class='pagelink'><a class='pagelink' href='" + rlink + "'>" + rlink + "</a></div>";
-            html += "</form>"; 
-
-            html += "</td>";
-            html += "</tr>";
-            html += "</table>";
-
-            html += "</div>"; // recordURL
-
+            
             html += "</div>"; // searchResult
             return html;
         }
@@ -359,6 +407,7 @@
         const performSearch = function () {
             let startTime = new Date();
             var container = CloudKit.getDefaultContainer();
+
             var database = container.publicCloudDatabase;
 
             var filters = [];
@@ -380,56 +429,63 @@
             if (unindexed === true) {
                 console.log("unindexed");
                 filters.push({
-                        fieldName: 'indexDate',
-                        comparator: 'EQUALS',
-                        fieldValue: { value: 0 }
-                    });
+                    fieldName: 'indexDate',
+                    comparator: 'EQUALS',
+                    fieldValue: { value: 0 }
+                });
             } else {
                 filters.push({
-                        fieldName: 'indexDate',
-                        comparator: 'NOT_EQUALS',
-                        fieldValue: { value: 0 }
-                    });
-                    filters.push({
-                        fieldName: 'weight',
-                        comparator: 'GREATER_THAN',
-                        fieldValue: { value: 0 }
-                    });
+                    fieldName: 'indexDate',
+                    comparator: 'NOT_EQUALS',
+                    fieldValue: { value: 0 }
+                });
+                filters.push({
+                    fieldName: 'weight',
+                    comparator: 'GREATER_THAN',
+                    fieldValue: { value: 0 }
+                });
             }
+
+            let orient = params.get('o'); // TODO: update the orient radio box
+            // document.getElementById('resultsLimitField').value = lim;
+            // var resultsLimit = null;
+            // if (typeof lim === 'string' && parseInt(lim) > 0) {
+            //     resultsLimit = Math.max(1, parseInt(lim));
+            // }
 
             let lim = params.get('l');
             document.getElementById('resultsLimitField').value = lim;
             var resultsLimit = null;
             if (typeof lim === 'string' && parseInt(lim) > 0) {
-                resultsLimit = Math.max(1, parseInt(lim)); 
-            } 
+                resultsLimit = Math.max(1, parseInt(lim));
+            }
 
             let snip = params.get('s');
             document.getElementById('snippetLengthField').value = snip;
-            var snipLength = 1024; // Int.max;
+            var snipLength = 1024 * 2; // Number.max;
             if (typeof slen === 'string' && parseInt(slen) > 0) {
                 snipLength = Math.max(1, parseInt(slen));
                 console.log("snipLength", snipLength);
-            } 
+            }
 
             const resultsDomain = params.get('d') || '';
             if (resultsDomain.length > 0) {
                 document.getElementById('resultsDomainField').value = resultsDomain;
                 filters.push({
-                        fieldName: 'rhost',
-                        comparator: 'BEGINS_WITH',
-                        fieldValue: { value: reverseString(resultsDomain) }
-                    });
+                    fieldName: 'rhost',
+                    comparator: 'BEGINS_WITH',
+                    fieldValue: { value: reverseString(resultsDomain) }
+                });
             }
 
             const resultsMIME = params.get('m') || '';
             if (resultsMIME.length > 0) {
                 document.getElementById('mimeTypeField').value = resultsMIME;
                 filters.push({
-                        fieldName: 'rmime',
-                        comparator: 'BEGINS_WITH',
-                        fieldValue: { value: reverseString(resultsMIME) }
-                    });
+                    fieldName: 'rmime',
+                    comparator: 'BEGINS_WITH',
+                    fieldValue: { value: reverseString(resultsMIME) }
+                });
             }
 
             // issue the query
@@ -439,10 +495,10 @@
                 document.getElementById('searchField').value = queryString;
 
                 filters.push({
-                        fieldName: 'text',
-                        comparator: 'CONTAINS_ALL_TOKENS',
-                        fieldValue: { value: queryString }
-                    });
+                    fieldName: 'text',
+                    comparator: 'CONTAINS_ALL_TOKENS',
+                    fieldValue: { value: queryString }
+                });
             }
 
             var sortDescriptors = [];
@@ -452,7 +508,7 @@
                 "ascending": false
             });
 
-            //document.getElementById('results').innerHTML = "Searching…"
+            //document.getElementById('results').innerHTML = "OK: Searching…"
 
             var query = {
                 recordType: 'Page',
@@ -481,7 +537,7 @@
                     if (resultsLimit === null || recordResults.length < resultsLimit) {
                         recordResults.push(element);
                         if (countOnly === false) {
-                            divhtml += recordElement(element, snippetRenderTime, snipLength) + "<hr />";
+                            divhtml += recordElement(element, snippetRenderTime, snipLength, orient) + "<hr />";
                             if (deferSnippetRender > 0 && snippetRenderTime > 0) {
                                 snippetRenderTime += deferSnippetRender;
                             }
@@ -490,6 +546,7 @@
                 });
                 document.getElementById('results').innerHTML = divhtml; // much faster to set it all at once
 
+
                 if (response.moreComing && resultsLimit !== null && (recordResults.length < resultsLimit)) { // there are more results…
                     console.log("executing continuation", response.continuationMarker);
                     database.performQuery(response) // …so execute the continuation
@@ -497,8 +554,10 @@
                         .catch(function (error) { console.warn(error); });
                 } else {
                     let sum = document.getElementById('summary');
-                    let plus = (resultsLimit == null || recordResults.length >= resultsLimit) && response.moreComing == true ? "+" : "";
-                    sum.placeholder = recordResults.length + plus + " results in " + ((new Date().getTime() - startTime.getTime()) / 1000.0) + " seconds";
+                    let plus = (resultsLimit == null || recordResults.length >= resultsLimit) || response.moreComing == true ? "+" : "";
+                    let summaryText = recordResults.length + plus + " results in " + ((new Date().getTime() - startTime.getTime()) / 1000.0) + " seconds";
+                    sum.placeholder = summaryText;
+                    console.log(summaryText, "continuation", response.moreComing, response.continuationMarker);
                 }
             };
 
@@ -533,9 +592,16 @@
                     }]
                 });
 
+                CloudKit.getDefaultContainer().setUpAuth().then(function(userInfo) {
+                    console.log("setupAuth:", userInfo);
+                });
+
                 // console.log("loaded cloudkit", CloudKit);
                 if (ok) {
-                    performSearch();
+                    document.getElementById('summary').placeholder = 'OK: Searching……';
+                    document.title = "OK: " + (params.get('q') || 'Search');
+
+                    setTimeout(performSearch, 0);
                 }
             } catch (e) {
                 console.error("error loading cloudkit", e);
@@ -545,4 +611,5 @@
     </script>
     <script src="https://cdn.apple-cloudkit.com/ck/2/cloudkit.js"></script>
 </body>
+
 </html>
