@@ -441,6 +441,8 @@
         }
 
         const performSearch = function (continuationResponse) {
+            const isContinuation = typeof continuationResponse === 'object';
+
             let startTime = new Date();
             var container = CloudKit.getDefaultContainer();
             var database = container.publicCloudDatabase;
@@ -555,7 +557,10 @@
             };
 
             let div = document.getElementById('results');
-            div.innerHTML = "";
+            if (isContinuation !== true) {
+                div.innerHTML = ""; // clear the current results unless this is a continuation
+            } 
+            
             var recordResults = [];
             var deferElementRender = 0; // 300; // the number of ms before we show the elements
             var snippetRenderTime = 0; // 200; // the initial snippet delay; incremented by deferSnippetRender
@@ -565,17 +570,18 @@
                 //console.log("record count", response.records.length);
                 //console.log("receive response", response, response.records);
 
-                var divhtml = "";
                 response.records.forEach(element => {
                     recordResults.push(element);
                     if (countOnly === false) {
-                        divhtml += recordElement(element, snippetRenderTime, snipLength, orient) + "<hr />";
+                        setTimeout(function() {
+                            document.getElementById('results').innerHTML += recordElement(element, snippetRenderTime, snipLength, orient) + "<hr />";
+                        }, recordResults.length * 10);
+
                         if (deferSnippetRender > 0 && snippetRenderTime > 0) {
                             snippetRenderTime += deferSnippetRender;
                         }
                     }
                 });
-                document.getElementById('results').innerHTML = divhtml; // much faster to set it all at once
 
 
                 let sum = document.getElementById('summary');
