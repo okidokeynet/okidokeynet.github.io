@@ -53,8 +53,24 @@
             text-align: center;
         }
 
-        div.continuationButton {
-            text-size-adjust: 200%;
+        div.continuationSection {
+            text-align: center;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 2em;
+                        
+        }
+
+        #continuationButton {
+            width: 80%;
+            /* height: 5em; */
+            /* -webkit-appearance: button; */
+            cursor: pointer;
+            /* background:transparent; */
+            font-size: 3em;
+            font-weight: bold;
+            padding: 3em;
+            /* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; */
         }
 
         .halfWidth {
@@ -112,7 +128,7 @@
         iframe.previewArea {
             /* visibility: hidden; */
             background-color: lemonchiffon;
-            resize: both;
+            resize: vertical;
             padding: 0;
             border: 0;
             /* otherwise the border is different from the textarea */
@@ -122,6 +138,7 @@
         }
 
         textarea.previewArea {
+            resize: vertical;
             padding: 0.5em;
             border-radius: 5px;
             border: 2px rgba(#000000, 0.5);
@@ -202,15 +219,15 @@
     <div id="results">
     </div>
 
-    <div id="continuationButton">
-        <input hidden type="button" value="More Results…" onclick="performContinuation(window.continuationResponse)" />
+    <div class="continuationSection">
+        <input id="continuationButton" type="button" value="Load More" onclick="performSearch(window.continuationResponse)" />
     </div>
 
-    <div id="auth">
+    <!-- <div id="auth">
         <h5 data-bind="text: displayUserName"></h5>
         <div id="apple-sign-in-button"></div>
         <div id="apple-sign-out-button"></div>
-    </div>
+    </div> -->
 
 
     <script>
@@ -423,10 +440,9 @@
             return html;
         }
 
-        const performSearch = function () {
+        const performSearch = function (continuationResponse) {
             let startTime = new Date();
             var container = CloudKit.getDefaultContainer();
-
             var database = container.publicCloudDatabase;
 
             var filters = [];
@@ -476,7 +492,7 @@
 
             let snip = params.get('s');
             document.getElementById('snippetLengthField').value = snip;
-            var snipLength = 1024 * 10; // Number.max;
+            var snipLength = Number.max; // 1024 * 10; // Number.max;
             if (typeof slen === 'string' && parseInt(slen) > 0) {
                 snipLength = Math.max(1, parseInt(slen));
                 console.log("snipLength", snipLength);
@@ -570,17 +586,14 @@
 
                 if (response.moreComing) {
                     window.continuationResponse = response;
-                    // console.log("executing continuation", response.continuationMarker);
-                    // database.performQuery(response) // …so execute the continuation
-                    //     .then(function (response) { handleResponse(response); })
-                    //     .catch(function (error) { console.warn(error); });
                     document.getElementById('continuationButton').hidden = false
                 } else {
+                    delete window.continuationResponse;
                     document.getElementById('continuationButton').hidden = true
                 }
             };
 
-            database.performQuery(query, options)
+            database.performQuery(continuationResponse || query, options)
                 .then(function (response) { handleResponse(response); })
                 .catch(function (error) { console.warn(error); });
         };
@@ -611,11 +624,11 @@
                             persist: true, // Sets a cookie.
                             signInButton: {
                                 id: 'apple-sign-in-button',
-                                theme: 'black' // Other options: 'white', 'white-with-outline'.
+                                theme: 'white-with-outline' // options: 'black', 'white', 'white-with-outline'.
                             },
                             signOutButton: {
                                 id: 'apple-sign-out-button',
-                                theme: 'black'
+                                theme: 'white-with-outline'
                             }
                         }
                     }]
