@@ -49,6 +49,14 @@
 
         .searchMeta { }
 
+        div.message {
+            text-align: center;
+        }
+
+        div.continuationButton {
+            text-size-adjust: 200%;
+        }
+
         .halfWidth {
             width: 48vw;
             margin-left: 1vw;
@@ -169,7 +177,7 @@
                 role="combobox" spellcheck="false" aria-label="Search" title="Individual search terms separated by spaces" />
             <input id="searchSubmit" type="submit" name="ok" value="Search" style="width: 10vw; padding-right: 1wv;" title="Search" />
             <input id="snippetLengthField" style="width: 4em" name="s" placeholder="sniplength" title="The length of the accessible text snippet in characters" />
-            <input id="resultsLimitField" style="width: 4em" name="l" placeholder="limit" title="The maximum number of results to return for a search" />
+            <input id="resultsLimitField" style="width: 4em" name="l" placeholder="limit" title="The number of results per batch" />
             <input id="mimeTypeField" style="width: 6em" name="m" placeholder="type" title="The MIME type of file to search for, such as text/html or application/pdf" />
             <input id="resultsDomainField" style="width: 10em" name="d" placeholder="host" title="The domain name constraint" />
 
@@ -194,9 +202,16 @@
     <div id="results">
     </div>
 
-    <h5 data-bind="text: displayUserName"></h5>
-    <div id="apple-sign-in-button"></div>
-    <div id="apple-sign-out-button"></div>
+    <div id="continuationButton">
+        <input hidden type="button" value="More Results…" onclick="performContinuation(window.continuationResponse)" />
+    </div>
+
+    <div id="auth">
+        <h5 data-bind="text: displayUserName"></h5>
+        <div id="apple-sign-in-button"></div>
+        <div id="apple-sign-out-button"></div>
+    </div>
+
 
     <script>
         "use strict";
@@ -416,7 +431,7 @@
 
             var filters = [];
 
-            var desiredKeys = null;
+            var desiredKeys = undefined;
             var defaultResultsLimit = '10';
 
             const countOnly = params.get('c') === '1';
@@ -424,7 +439,7 @@
             if (countOnly === true) {
                 console.log("countOnly");
                 defaultResultsLimit = '999';
-                desiredKeys = ["indexDate"]; // request no keys; doesn't seem to have any effect!
+                desiredKeys = ["indexDate"]; 
             }
 
             const unindexed = params.get('x') === '1';
@@ -450,16 +465,11 @@
                 });
             }
 
-            let orient = params.get('o') || 'l'; // TODO: update the orient radio box
-            // document.getElementById('resultsLimitField').value = lim;
-            // var resultsLimit = null;
-            // if (typeof lim === 'string' && parseInt(lim) > 0) {
-            //     resultsLimit = Math.max(1, parseInt(lim));
-            // }
+            let orient = params.get('o') || 'l'; // the orientation of the interface
 
             let lim = params.get('l');
             document.getElementById('resultsLimitField').value = lim;
-            var resultsLimit = null;
+            var resultsLimit = 10;
             if (typeof lim === 'string' && parseInt(lim) > 0) {
                 resultsLimit = Math.max(1, parseInt(lim));
             }
@@ -514,13 +524,18 @@
 
             //document.getElementById('results').innerHTML = "OK: Searching…"
 
+            // console.log("resultsLimit", resultsLimit);
+
             var query = {
                 recordType: 'Page',
-                resultsLimit: resultsLimit,
-                desiredKeys: desiredKeys,
-                numbersAsStrings: false,
                 sortBy: sortDescriptors,
-                filterBy: filters
+                filterBy: filters,
+            };
+
+            var options = {
+                desiredKeys: desiredKeys,
+                resultsLimit: resultsLimit,
+                numbersAsStrings: false
             };
 
             let div = document.getElementById('results');
@@ -530,42 +545,42 @@
             var snippetRenderTime = 0; // 200; // the initial snippet delay; incremented by deferSnippetRender
             var deferSnippetRender = 0; // 800; // the number of ms before we fill in the snippets textarea
 
-            const handleResponse = function (response) {
+            const handleResponse = function(response) {
                 //console.log("record count", response.records.length);
                 //console.log("receive response", response, response.records);
 
                 var divhtml = "";
                 response.records.forEach(element => {
-                    //document.getElementById('summary').placeholder += "…";
-
-                    if (resultsLimit === null || recordResults.length < resultsLimit) {
-                        recordResults.push(element);
-                        if (countOnly === false) {
-                            divhtml += recordElement(element, snippetRenderTime, snipLength, orient) + "<hr />";
-                            if (deferSnippetRender > 0 && snippetRenderTime > 0) {
-                                snippetRenderTime += deferSnippetRender;
-                            }
+                    recordResults.push(element);
+                    if (countOnly === false) {
+                        divhtml += recordElement(element, snippetRenderTime, snipLength, orient) + "<hr />";
+                        if (deferSnippetRender > 0 && snippetRenderTime > 0) {
+                            snippetRenderTime += deferSnippetRender;
                         }
                     }
                 });
                 document.getElementById('results').innerHTML = divhtml; // much faster to set it all at once
 
 
-                if (response.moreComing && resultsLimit !== null && (recordResults.length < resultsLimit)) { // there are more results…
-                    console.log("executing continuation", response.continuationMarker);
-                    database.performQuery(response) // …so execute the continuation
-                        .then(function (response) { handleResponse(response); })
-                        .catch(function (error) { console.warn(error); });
+                let sum = document.getElementById('summary');
+                let plus = response.moreComing == true ? "+" : "";
+                let summaryText = recordResults.length + plus + " results in " + ((new Date().getTime() - startTime.getTime()) / 1000.0) + " seconds";
+                sum.placeholder = summaryText;
+                console.log(summaryText, "continuation", response.moreComing, response.continuationMarker);
+
+                if (response.moreComing) {
+                    window.continuationResponse = response;
+                    // console.log("executing continuation", response.continuationMarker);
+                    // database.performQuery(response) // …so execute the continuation
+                    //     .then(function (response) { handleResponse(response); })
+                    //     .catch(function (error) { console.warn(error); });
+                    document.getElementById('continuationButton').hidden = false
                 } else {
-                    let sum = document.getElementById('summary');
-                    let plus = (resultsLimit == null || recordResults.length >= resultsLimit) || response.moreComing == true ? "+" : "";
-                    let summaryText = recordResults.length + plus + " results in " + ((new Date().getTime() - startTime.getTime()) / 1000.0) + " seconds";
-                    sum.placeholder = summaryText;
-                    console.log(summaryText, "continuation", response.moreComing, response.continuationMarker);
+                    document.getElementById('continuationButton').hidden = true
                 }
             };
 
-            database.performQuery(query)
+            database.performQuery(query, options)
                 .then(function (response) { handleResponse(response); })
                 .catch(function (error) { console.warn(error); });
         };
@@ -587,6 +602,7 @@
                 CloudKit.configure({
                     logger: window.console,
                     containers: [{
+                        // auth window will say: "Sign in to iCloud.net.tiqtiq.TiqTiq"
                         containerIdentifier: 'iCloud.net.tiqtiq.TiqTiq',
                         environment: 'development',
                         apiTokenAuth: {
@@ -611,9 +627,9 @@
                     var name = userIdentity.nameComponents;
                     
                     if(name) {
-                        document.getElementById('message').innerHTML = ('Welcome, ' + name.givenName);    
+                        // document.getElementById('message').innerHTML = ('Welcome, ' + name.givenName);    
                     } else {
-                        document.getElementById('message').innerHTML = ('Welcome!');
+                        // document.getElementById('message').innerHTML = ('Welcome!');
                     }
 
                     // document.getElementById('message').innerHTML += " You can search now.";
@@ -633,11 +649,10 @@
                     .then(gotoAuthenticatedState)
                     .catch(gotoUnauthenticatedState);
 
-
                 CloudKit.getDefaultContainer().setUpAuth().then(function(userInfo) {
                     console.log("setupAuth:", userInfo);
                     if (ok) {
-                        document.getElementById('summary').placeholder = 'OK: Searching……';
+                        document.getElementById('summary').placeholder = 'OK: Searching………';
                         document.title = "OK: " + (params.get('q') || 'Search');
                         setTimeout(performSearch, 0);
                     }
@@ -648,6 +663,10 @@
             }
         };
         window.addEventListener('cloudkitloaded', initCloudKit);
+
+        if (ok) {
+            document.getElementById('summary').placeholder = "OK: Searching……";
+        }
     </script>
     <script src="https://cdn.apple-cloudkit.com/ck/2/cloudkit.js"></script>
 </body>
