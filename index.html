@@ -63,13 +63,12 @@
 
         #continuationButton {
             width: 80%;
-            /* height: 5em; */
-            /* -webkit-appearance: button; */
+            -webkit-appearance: button;
+            appearance: button;
             cursor: pointer;
             /* background:transparent; */
-            font-size: 3em;
-            font-weight: bold;
-            padding: 3em;
+            font-size: 1.5em;
+            /* font-weight: bold; */
             /* font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif; */
         }
 
@@ -220,7 +219,7 @@
     </div>
 
     <div class="continuationSection">
-        <input id="continuationButton" type="button" value="Load More" onclick="performSearch(window.continuationResponse)" />
+        <input id="continuationButton" type="button" value="Load More" hidden onclick="performSearch(window.continuationResponse)" />
     </div>
 
     <!-- <div id="auth">
@@ -285,7 +284,7 @@
             let rname = record['recordName'] || '';
             let rlink = (fields['responseURL'] || {}).value || ("https://" + rname);
 
-            var html = "<div style='display: flex;'>";
+            let html = "<div style='display: flex;'>";
 
             function addSnippetSection(widthClass) {
                 html += "<div class='searchMeta'>";
@@ -293,7 +292,7 @@
                 html += "<textarea id='textarea-" + rname + "' class='previewArea " + widthClass + "' placeholder='Loading accessible snippet…' readonly>"
                 html += "";
                 let textObject = fields['text'];
-                var snippet = (textObject || {}).value;
+                let snippet = (textObject || {}).value;
                 snippet = escapeHtml(snippet.substring(0, snipLength));
 
                 if (snippetRenderTime <= 0) {
@@ -315,8 +314,7 @@
             }
 
             function addMetadataSection(widthClass) {
-
-                var keys = Object.keys(fields);
+                let keys = Object.keys(fields);
                 keys = keys.sort();
 
                 keys = [
@@ -441,16 +439,17 @@
         }
 
         const performSearch = function (continuationResponse) {
+            document.getElementById('continuationButton').hidden = true;
             const isContinuation = typeof continuationResponse === 'object';
 
             let startTime = new Date();
-            var container = CloudKit.getDefaultContainer();
-            var database = container.publicCloudDatabase;
+            let container = CloudKit.getDefaultContainer();
+            let database = container.publicCloudDatabase;
 
-            var filters = [];
+            let filters = [];
 
-            var desiredKeys = undefined;
-            var defaultResultsLimit = '10';
+            let desiredKeys = undefined;
+            let defaultResultsLimit = '10';
 
             const countOnly = params.get('c') === '1';
             document.getElementById('countOnly').checked = countOnly;
@@ -487,14 +486,14 @@
 
             let lim = params.get('l');
             document.getElementById('resultsLimitField').value = lim;
-            var resultsLimit = 10;
+            let resultsLimit = 10;
             if (typeof lim === 'string' && parseInt(lim) > 0) {
                 resultsLimit = Math.max(1, parseInt(lim));
             }
 
             let snip = params.get('s');
             document.getElementById('snippetLengthField').value = snip;
-            var snipLength = Number.max; // 1024 * 10; // Number.max;
+            let snipLength = Number.max; // 1024 * 10; // Number.max;
             if (typeof slen === 'string' && parseInt(slen) > 0) {
                 snipLength = Math.max(1, parseInt(slen));
                 console.log("snipLength", snipLength);
@@ -533,7 +532,7 @@
                 });
             }
 
-            var sortDescriptors = [];
+            let sortDescriptors = [];
             sortDescriptors.push({ // most recent first
                 //"systemFieldName": "createdTimestamp",
                 "systemFieldName": "modifiedTimestamp",
@@ -544,13 +543,13 @@
 
             // console.log("resultsLimit", resultsLimit);
 
-            var query = {
+            let query = {
                 recordType: 'Page',
                 sortBy: sortDescriptors,
                 filterBy: filters,
             };
 
-            var options = {
+            let options = {
                 desiredKeys: desiredKeys,
                 resultsLimit: resultsLimit,
                 numbersAsStrings: false
@@ -561,28 +560,29 @@
                 div.innerHTML = ""; // clear the current results unless this is a continuation
             } 
             
-            var recordResults = [];
-            var deferElementRender = 0; // 300; // the number of ms before we show the elements
-            var snippetRenderTime = 0; // 200; // the initial snippet delay; incremented by deferSnippetRender
-            var deferSnippetRender = 0; // 800; // the number of ms before we fill in the snippets textarea
+            let recordResults = [];
+            let deferElementRender = 0; // 300; // the number of ms before we show the elements
+            let snippetRenderTime = 0; // 200; // the initial snippet delay; incremented by deferSnippetRender
+            let deferSnippetRender = 0; // 800; // the number of ms before we fill in the snippets textarea
 
             const handleResponse = function(response) {
                 //console.log("record count", response.records.length);
                 //console.log("receive response", response, response.records);
 
+                let resultHTML = "";
                 response.records.forEach(element => {
                     recordResults.push(element);
                     if (countOnly === false) {
-                        setTimeout(function() {
-                            document.getElementById('results').innerHTML += recordElement(element, snippetRenderTime, snipLength, orient) + "<hr />";
-                        }, recordResults.length * 10);
+                        // setTimeout(function() {
+                        // }, recordResults.length * 10);
+                        resultHTML += recordElement(element, snippetRenderTime, snipLength, orient) + "<hr />";
 
                         if (deferSnippetRender > 0 && snippetRenderTime > 0) {
                             snippetRenderTime += deferSnippetRender;
                         }
                     }
                 });
-
+                document.getElementById('results').innerHTML += resultHTML;
 
                 let sum = document.getElementById('summary');
                 let plus = response.moreComing == true ? "+" : "";
@@ -592,10 +592,10 @@
 
                 if (response.moreComing) {
                     window.continuationResponse = response;
-                    document.getElementById('continuationButton').hidden = false
+                    document.getElementById('continuationButton').hidden = false;
                 } else {
                     delete window.continuationResponse;
-                    document.getElementById('continuationButton').hidden = true
+                    document.getElementById('continuationButton').hidden = true;
                 }
             };
 
@@ -643,7 +643,7 @@
                 // console.log("loaded cloudkit", CloudKit);
 
                 function gotoAuthenticatedState(userIdentity) {
-                    var name = userIdentity.nameComponents;
+                    let name = userIdentity.nameComponents;
                     
                     if(name) {
                         // document.getElementById('message').innerHTML = ('Welcome, ' + name.givenName);    
