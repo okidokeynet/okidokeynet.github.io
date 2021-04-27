@@ -77,15 +77,14 @@
             margin-right: 2vw;
         }
 
-        .searchResult {
-            display: flex;       
-            flex-flow: column wrap;
-            flex-direction:column;
-            flex-wrap:wrap;   
+
+        .searchSection {
+            display: flex;
+            flex-direction: row;
         }
 
         .autoWidth {
-            color: red;
+            display: flex;
             width: 48vw;
             margin-left: 1vw;
             margin-right: 1vw;
@@ -93,14 +92,19 @@
             column-count: 2;
         }
 
-        @media screen and (max-width: 1420px) {
+        /* narrow devices default to single-column display */
+        @media screen and (max-width: 800px) {
+            .searchSection {
+                display: flex;
+                flex-direction: column;
+            }
+
             .autoWidth {
-                color: blue;
+                display: inline-flex;
                 width: 96vw;
                 margin-left: 2vw;
                 margin-right: 2vw;     
                 column-count: 1;
-                /* display: block; */
             }
         }
 
@@ -381,7 +385,7 @@
             let rname = record['recordName'] || '';
             let rlink = (fields['responseURL'] || {}).value || ("https://" + rname);
 
-            let html = "<div style='display: flex;'>";
+            let html = "<div class='searchSection'>";
 
             function addSnippetSection(widthClass) {
                 html += "<div class='searchMeta'>";
@@ -407,7 +411,7 @@
 
                 html += "<div id='iframe-" + rname + "'></div>";
 
-                html += "</div>";
+                html += "</div>"; // searchMeta
             }
 
             function addMetadataSection(widthClass) {
