@@ -1,16 +1,16 @@
 <html>
-
+<!--
+  __          __         
+ /  )/ ' __  /  )  / _   
+(__//(/     /(_/()/((-(/ 
+                      /  
+-->
 <head>
     <meta charset="UTF-8">
     <title>OK: Search</title>
-
-    <meta name="description"
-        content="I don't want to sell anything, buy anything, or process anything as a career. I don't want to sell anything bought or processed, or buy anything sold or processed, or process anything sold, bought, or processed, or repair anything sold, bought, or processed. You know, as a career, I don't want to do that." />
-
     <style>
         html, body {
             background-color: white;
-
             /* filter: hue-rotate(310deg); */
             max-width: 100%;
             /* overflow-x: hidden; */
@@ -44,7 +44,6 @@
             white-space: pre-line;
             word-wrap: break-word;
         }
-
 
         @media screen and (prefers-color-scheme: dark) {
             /* body {
@@ -775,18 +774,9 @@
                 .catch(function (error) { console.warn(error); });
         };
 
-        /**
-         * This function is run immediately after CloudKit has loaded.
-         * 
-         * Data Size Limits: These are the limits on the size of data sent to and from the CloudKit server.
-         *
-         *  Maximum number of operations in a request: 200
-         *  Maximum number of records in a response: 200
-         *  Maximum number of tokens in a request: 200
-         *  Maximum record size (not including Asset fields): 1 MB
-         *  Maximum file size of an Asset field: 50 MB
-         *  Maximum number of source references to a single target where the action is delete self: 750
-         */
+        // marker function for periodic token rotation
+        function rotateTokenMarker(token) { return token; }
+
         const initCloudKit = function () {
             try {
                 CloudKit.configure({
@@ -797,8 +787,8 @@
                         environment: 'development',
                         apiTokenAuth: {
                             // note this only works with our origin host; use a local dev key in `t` for testing
-                            apiToken: params.get('t') || 'a56fb0334eb8f142d81f36b4e59dd579d1407958f7084e2af48276a1514a9dcf',
-                            persist: true, // Sets a cookie.
+                            apiToken: params.get('t') || rotateTokenMarker('a56fb0334eb8f142d81f36b4e59dd579d1407958f7084e2af48276a1514a9dcf'),
+                            persist: true,
                             signInButton: {
                                 id: 'apple-sign-in-button',
                                 theme: 'white-with-outline' // options: 'black', 'white', 'white-with-outline'.
