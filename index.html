@@ -385,7 +385,7 @@
             } else if (type === 'preview') {
                 iframe.hidden = false;
                 textarea.hidden = true;
-                iframe.innerHTML = "<iframe class='previewArea halfWidth' referrerpolicy='no-referrer' sandbox='allow-forms allow-same-origin' src='" + rlink + "'></iframe>";
+                iframe.innerHTML = "<iframe class='previewArea halfWidth' referrerpolicy='no-referrer' frameborder='0' marginheight='0' marginwidth='0' scrolling='auto' sandbox='allow-forms allow-same-origin' src='" + rlink + "'></iframe>";
             }
         }
 
@@ -607,7 +607,7 @@
 
             let lim = params.get('l');
             element('resultsLimitField').value = lim;
-            let resultsLimit = 10;
+            let resultsLimit = 25;
             if (typeof lim === 'string' && parseInt(lim) > 0) {
                 resultsLimit = Math.max(1, parseInt(lim));
             }
