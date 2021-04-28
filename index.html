@@ -8,7 +8,9 @@
         content="I don't want to sell anything, buy anything, or process anything as a career. I don't want to sell anything bought or processed, or buy anything sold or processed, or process anything sold, bought, or processed, or repair anything sold, bought, or processed. You know, as a career, I don't want to do that." />
 
     <style>
-        body {
+        html, body {
+            background-color: white;
+
             /* filter: hue-rotate(310deg); */
             max-width: 100%;
             /* overflow-x: hidden; */
@@ -17,6 +19,22 @@
             padding: 0;
         }
 
+        @media (prefers-color-scheme: dark) { body { filter: invert(85%); } }
+        /* @media (prefers-color-scheme: dark) { a { filter: invert(85%); } } */
+
+        /* @media (prefers-color-scheme: dark) { :root { color: white; background-color: #1e1e1e; } } */
+
+        div.floating { 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
+            border-bottom: 1px solid #e6e6e6; 
+            /* background-color: rgba(255, 255, 255, 0.72);  looks bad on FF due to missing backdrop-filter support */
+            background-color: rgba(255, 255, 255, 0.92); 
+        }
+
+        /* @media (prefers-color-scheme: dark) { div.floating { background-color: rgba(30, 30, 30, 0.72); border-color: #333437; } } */
+
+        @media (prefers-color-scheme: dark) { header .icon { filter: invert(100%); } }
 
         div.pagelink {
             /* width: 33vw; */
@@ -39,7 +57,7 @@
             } */
         }
 
-        .searchMeta { }
+        .searchMeta {}
 
         div.message {
             text-align: center;
@@ -50,7 +68,7 @@
             margin-left: auto;
             margin-right: auto;
             padding: 2em;
-                        
+
         }
 
         #continuationButton {
@@ -102,7 +120,7 @@
                 display: inline-flex;
                 width: 96vw;
                 margin-left: 2vw;
-                margin-right: 2vw;     
+                margin-right: 2vw;
                 column-count: 1;
             }
         }
@@ -118,7 +136,7 @@
             text-overflow: ellipsis;
         }
 
-        td.recordKey  {
+        td.recordKey {
             width: 10vw;
             white-space: nowrap;
             overflow: hidden;
@@ -129,14 +147,14 @@
             vertical-align: text-top;
         }
 
-        td.recordValue  {
+        td.recordValue {
             background-color: lightyellow;
             font-size: 1em;
 
             text-overflow: ellipsis;
             overflow: hidden;
             white-space: normal;
-            word-wrap: break-word; 
+            word-wrap: break-word;
             overflow-wrap: break-word;
         }
 
@@ -182,7 +200,7 @@
             width: 12px;
         }
 
-        .previewArea::-webkit-scrollbar-button {}
+        /* .previewArea::-webkit-scrollbar-button {} */
 
         .previewArea::-webkit-scrollbar-track {
             -webkit-box-shadow: inset 0 0 3px rgba(0, 0, 0, 0.5);
@@ -190,29 +208,29 @@
             border-radius: 5px;
         }
 
-        .previewArea::-webkit-scrollbar-track-piece {}
+        /* .previewArea::-webkit-scrollbar-track-piece {} */
 
         .previewArea::-webkit-scrollbar-thumb {
             border-radius: 5px;
             background: rgba(#000000, 0.8);
-            -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
+            box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.5);
         }
 
-        .previewArea::-webkit-scrollbar-corner {}
+        /* .previewArea::-webkit-scrollbar-corner {} */
 
-        .previewArea::-webkit-resizer {}
+        /* .previewArea::-webkit-resizer {} */
 
         .previewArea::-webkit-scrollbar-thumb:window-inactive {
             background: rgba(#e89b4d, 0.4);
         }
 
-        label {
-            /* border:1px solid #ccc; */
-        }
+        /* label {
+            border:1px solid #ccc;
+        } */
 
         label:hover {
-            background:#eee;
-            cursor:pointer;
+            background: #eee;
+            cursor: pointer;
         }
 
         hr {
@@ -225,88 +243,118 @@
 </head>
 
 <body>
-    <div style="margin-left: 1vw; margin-right: 1vw; margin-top: 1em; margin-bottom: 1em;">
-
+    <div class="floating" style="margin-left: 1vw; margin-right: 1vw; padding-top: 10px; margin-bottom: 1em; position: sticky; top: 0px;">
         <form onsubmit="document.getElementById('summary').placeholder = 'OK: Searching…';">
-            <!-- Orientation of interface  -->
-            <label><input id='orient-t' type='radio' name='o' value='t' title="Accessibility Preview Above Summary">
-                <svg width="17px" height="13px" viewBox="0 0 17 13" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                        <g id="rectangle.topthird.inset" transform="translate(-1404.000000, -625.000000)" fill="#000000" fill-rule="nonzero">
-                            <g id="Symbols" transform="translate(487.079500, 622.660200)">
-                                <g id="Regular-S" transform="translate(917.476120, 2.539000)">
-                                    <path d="M2.1994573,12.5757157 L13.8005038,12.5757157 C15.2754314,12.5757157 16,11.8511886 16,10.4021291 L16,2.17358212 C16,0.724533261 15.2754314,0 13.8005038,0 L2.1994573,0 C0.733150077,0 3.13787208e-16,0.724533261 3.13787208e-16,2.17358212 L3.13787208e-16,10.4021291 C3.13787208e-16,11.8511886 0.733150077,12.5757157 2.1994573,12.5757157 Z M2.21671566,11.3250452 C1.59567958,11.3250452 1.24205096,10.997283 1.24205096,10.3417513 L1.24205096,2.23395989 C1.24205096,1.58706276 1.59567958,1.25067484 2.21671566,1.25067484 L13.7832631,1.25067484 C14.4042816,1.25067484 14.7579102,1.58706276 14.7579102,2.23395989 L14.7579102,10.3417513 C14.7579102,10.997283 14.4042816,11.3250452 13.7832631,11.3250452 L2.21671566,11.3250452 Z M2.25121472,2.99299221 L2.25121472,4.15741057 C2.25121472,4.61455404 2.55310358,4.91642523 2.99298868,4.91642523 L13.0242308,4.91642523 C13.4727539,4.91642523 13.7660048,4.61455404 13.7660048,4.15741057 L13.7660048,2.99299221 C13.7660048,2.53584875 13.4727539,2.23395989 13.0242308,2.23395989 L2.99298868,2.23395989 C2.55310358,2.23395989 2.25121472,2.53584875 2.25121472,2.99299221 Z" id="Shape"></path>
+            <div id="rescfg">
+
+                <!-- Orientation of interface  -->
+                <label><input id='orient-t' type='radio' name='o' value='t' title="Accessibility Preview Above Summary">
+                    <svg width="17px" height="13px" viewBox="0 0 17 13" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <g id="rectangle.topthird.inset" transform="translate(-1404.000000, -625.000000)"
+                                fill="#000000" fill-rule="nonzero">
+                                <g id="Symbols" transform="translate(487.079500, 622.660200)">
+                                    <g id="Regular-S" transform="translate(917.476120, 2.539000)">
+                                        <path
+                                            d="M2.1994573,12.5757157 L13.8005038,12.5757157 C15.2754314,12.5757157 16,11.8511886 16,10.4021291 L16,2.17358212 C16,0.724533261 15.2754314,0 13.8005038,0 L2.1994573,0 C0.733150077,0 3.13787208e-16,0.724533261 3.13787208e-16,2.17358212 L3.13787208e-16,10.4021291 C3.13787208e-16,11.8511886 0.733150077,12.5757157 2.1994573,12.5757157 Z M2.21671566,11.3250452 C1.59567958,11.3250452 1.24205096,10.997283 1.24205096,10.3417513 L1.24205096,2.23395989 C1.24205096,1.58706276 1.59567958,1.25067484 2.21671566,1.25067484 L13.7832631,1.25067484 C14.4042816,1.25067484 14.7579102,1.58706276 14.7579102,2.23395989 L14.7579102,10.3417513 C14.7579102,10.997283 14.4042816,11.3250452 13.7832631,11.3250452 L2.21671566,11.3250452 Z M2.25121472,2.99299221 L2.25121472,4.15741057 C2.25121472,4.61455404 2.55310358,4.91642523 2.99298868,4.91642523 L13.0242308,4.91642523 C13.4727539,4.91642523 13.7660048,4.61455404 13.7660048,4.15741057 L13.7660048,2.99299221 C13.7660048,2.53584875 13.4727539,2.23395989 13.0242308,2.23395989 L2.99298868,2.23395989 C2.55310358,2.23395989 2.25121472,2.53584875 2.25121472,2.99299221 Z"
+                                            id="Shape"></path>
+                                    </g>
                                 </g>
                             </g>
                         </g>
-                    </g>
-                </svg></input></label>
-            <label><input id='orient-l' type='radio' name='o' value='l' title="Accessibility Preview Left of Summary">
-                <svg width="17px" height="13px" viewBox="0 0 17 13" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                        <g id="rectangle.leftthird.inset.fill" transform="translate(-1404.000000, -625.000000)" fill="#000000" fill-rule="nonzero">
-                            <g id="Symbols" transform="translate(487.079500, 622.660200)">
-                                <g id="Regular-S" transform="translate(917.476120, 2.539000)">
-                                    <path d="M2.1994573,12.5757157 L13.8005038,12.5757157 C15.2754314,12.5757157 16,11.8511886 16,10.4021291 L16,2.17358212 C16,0.724533261 15.2754314,0 13.8005038,0 L2.1994573,0 C0.733150077,0 3.13787208e-16,0.724533261 3.13787208e-16,2.17358212 L3.13787208e-16,10.4021291 C3.13787208e-16,11.8511886 0.733150077,12.5757157 2.1994573,12.5757157 Z M2.21671566,11.3250452 C1.59567958,11.3250452 1.24205096,10.997283 1.24205096,10.3417513 L1.24205096,2.23395989 C1.24205096,1.58706276 1.59567958,1.25067484 2.21671566,1.25067484 L13.7832631,1.25067484 C14.4042816,1.25067484 14.7579102,1.58706276 14.7579102,2.23395989 L14.7579102,10.3417513 C14.7579102,10.997283 14.4042816,11.3250452 13.7832631,11.3250452 L2.21671566,11.3250452 Z M4.66629026,10.3245107 C5.10619303,10.3245107 5.40808189,10.0226218 5.40808189,9.56547833 L5.40808189,3.01023291 C5.40808189,2.55308945 5.10619303,2.25121825 4.66629026,2.25121825 L2.97573032,2.25121825 C2.53584522,2.25121825 2.23395636,2.55308945 2.23395636,3.01023291 L2.23395636,9.56547833 C2.23395636,10.0226218 2.53584522,10.3245107 2.97573032,10.3245107 L4.66629026,10.3245107 Z" id="Shape"></path>
+                    </svg></input></label>
+                <label><input id='orient-l' type='radio' name='o' value='l'
+                        title="Accessibility Preview Left of Summary">
+                    <svg width="17px" height="13px" viewBox="0 0 17 13" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <g id="rectangle.leftthird.inset.fill" transform="translate(-1404.000000, -625.000000)"
+                                fill="#000000" fill-rule="nonzero">
+                                <g id="Symbols" transform="translate(487.079500, 622.660200)">
+                                    <g id="Regular-S" transform="translate(917.476120, 2.539000)">
+                                        <path
+                                            d="M2.1994573,12.5757157 L13.8005038,12.5757157 C15.2754314,12.5757157 16,11.8511886 16,10.4021291 L16,2.17358212 C16,0.724533261 15.2754314,0 13.8005038,0 L2.1994573,0 C0.733150077,0 3.13787208e-16,0.724533261 3.13787208e-16,2.17358212 L3.13787208e-16,10.4021291 C3.13787208e-16,11.8511886 0.733150077,12.5757157 2.1994573,12.5757157 Z M2.21671566,11.3250452 C1.59567958,11.3250452 1.24205096,10.997283 1.24205096,10.3417513 L1.24205096,2.23395989 C1.24205096,1.58706276 1.59567958,1.25067484 2.21671566,1.25067484 L13.7832631,1.25067484 C14.4042816,1.25067484 14.7579102,1.58706276 14.7579102,2.23395989 L14.7579102,10.3417513 C14.7579102,10.997283 14.4042816,11.3250452 13.7832631,11.3250452 L2.21671566,11.3250452 Z M4.66629026,10.3245107 C5.10619303,10.3245107 5.40808189,10.0226218 5.40808189,9.56547833 L5.40808189,3.01023291 C5.40808189,2.55308945 5.10619303,2.25121825 4.66629026,2.25121825 L2.97573032,2.25121825 C2.53584522,2.25121825 2.23395636,2.55308945 2.23395636,3.01023291 L2.23395636,9.56547833 C2.23395636,10.0226218 2.53584522,10.3245107 2.97573032,10.3245107 L4.66629026,10.3245107 Z"
+                                            id="Shape"></path>
+                                    </g>
                                 </g>
                             </g>
                         </g>
-                    </g>
-                </svg></input></label>
-            <label><input id='orient-r' type='radio' name='o' value='r' title="Accessibility Preview Right of Summary">
-                <svg width="17px" height="13px" viewBox="0 0 17 13" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                        <g id="rectangle.rightthird.inset.fill" transform="translate(-1404.000000, -625.000000)" fill="#000000" fill-rule="nonzero">
-                            <g id="Symbols" transform="translate(487.079500, 622.660200)">
-                                <g id="Regular-S" transform="translate(917.476120, 2.539000)">
-                                    <path d="M2.1994573,12.5757157 L13.8005038,12.5757157 C15.2754314,12.5757157 16,11.8511886 16,10.4021291 L16,2.17358212 C16,0.724533261 15.2754314,0 13.8005038,0 L2.1994573,0 C0.733150077,0 3.13787208e-16,0.724533261 3.13787208e-16,2.17358212 L3.13787208e-16,10.4021291 C3.13787208e-16,11.8511886 0.733150077,12.5757157 2.1994573,12.5757157 Z M2.21671566,11.3250452 C1.59567958,11.3250452 1.24205096,10.997283 1.24205096,10.3417513 L1.24205096,2.23395989 C1.24205096,1.58706276 1.59567958,1.25067484 2.21671566,1.25067484 L13.7832631,1.25067484 C14.4042816,1.25067484 14.7579102,1.58706276 14.7579102,2.23395989 L14.7579102,10.3417513 C14.7579102,10.997283 14.4042816,11.3250452 13.7832631,11.3250452 L2.21671566,11.3250452 Z M11.3422912,10.3245107 L13.0242308,10.3245107 C13.4727539,10.3245107 13.7660048,10.0226218 13.7660048,9.56547833 L13.7660048,3.01023291 C13.7660048,2.55308945 13.4727539,2.25121825 13.0242308,2.25121825 L11.3422912,2.25121825 C10.8937681,2.25121825 10.6005173,2.55308945 10.6005173,3.01023291 L10.6005173,9.56547833 C10.6005173,10.0226218 10.8937681,10.3245107 11.3422912,10.3245107 Z" id="Shape"></path>
+                    </svg></input></label>
+                <label><input id='orient-r' type='radio' name='o' value='r'
+                        title="Accessibility Preview Right of Summary">
+                    <svg width="17px" height="13px" viewBox="0 0 17 13" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <g id="rectangle.rightthird.inset.fill" transform="translate(-1404.000000, -625.000000)"
+                                fill="#000000" fill-rule="nonzero">
+                                <g id="Symbols" transform="translate(487.079500, 622.660200)">
+                                    <g id="Regular-S" transform="translate(917.476120, 2.539000)">
+                                        <path
+                                            d="M2.1994573,12.5757157 L13.8005038,12.5757157 C15.2754314,12.5757157 16,11.8511886 16,10.4021291 L16,2.17358212 C16,0.724533261 15.2754314,0 13.8005038,0 L2.1994573,0 C0.733150077,0 3.13787208e-16,0.724533261 3.13787208e-16,2.17358212 L3.13787208e-16,10.4021291 C3.13787208e-16,11.8511886 0.733150077,12.5757157 2.1994573,12.5757157 Z M2.21671566,11.3250452 C1.59567958,11.3250452 1.24205096,10.997283 1.24205096,10.3417513 L1.24205096,2.23395989 C1.24205096,1.58706276 1.59567958,1.25067484 2.21671566,1.25067484 L13.7832631,1.25067484 C14.4042816,1.25067484 14.7579102,1.58706276 14.7579102,2.23395989 L14.7579102,10.3417513 C14.7579102,10.997283 14.4042816,11.3250452 13.7832631,11.3250452 L2.21671566,11.3250452 Z M11.3422912,10.3245107 L13.0242308,10.3245107 C13.4727539,10.3245107 13.7660048,10.0226218 13.7660048,9.56547833 L13.7660048,3.01023291 C13.7660048,2.55308945 13.4727539,2.25121825 13.0242308,2.25121825 L11.3422912,2.25121825 C10.8937681,2.25121825 10.6005173,2.55308945 10.6005173,3.01023291 L10.6005173,9.56547833 C10.6005173,10.0226218 10.8937681,10.3245107 11.3422912,10.3245107 Z"
+                                            id="Shape"></path>
+                                    </g>
                                 </g>
                             </g>
                         </g>
-                    </g>
-                </svg></input></label>
-            <label><input id='orient-b' type='radio' name='o' value='b' title="Accessibility Preview Above Summary Below Summary">
-                <svg width="17px" height="13px" viewBox="0 0 17 13" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                        <g id="rectangle.bottomthird.inset.fill" transform="translate(-1404.000000, -625.000000)" fill="#000000" fill-rule="nonzero">
-                            <g id="Symbols" transform="translate(487.079500, 622.660200)">
-                                <g id="Regular-S" transform="translate(917.476120, 2.539000)">
-                                    <path d="M2.1994573,12.5757157 L13.8005038,12.5757157 C15.2754314,12.5757157 16,11.8511886 16,10.4021291 L16,2.17358212 C16,0.724533261 15.2754314,0 13.8005038,0 L2.1994573,0 C0.733150077,0 3.13787208e-16,0.724533261 3.13787208e-16,2.17358212 L3.13787208e-16,10.4021291 C3.13787208e-16,11.8511886 0.733150077,12.5757157 2.1994573,12.5757157 Z M2.21671566,11.3250452 C1.59567958,11.3250452 1.24205096,10.997283 1.24205096,10.3417513 L1.24205096,2.23395989 C1.24205096,1.58706276 1.59567958,1.25067484 2.21671566,1.25067484 L13.7832631,1.25067484 C14.4042816,1.25067484 14.7579102,1.58706276 14.7579102,2.23395989 L14.7579102,10.3417513 C14.7579102,10.997283 14.4042816,11.3250452 13.7832631,11.3250452 L2.21671566,11.3250452 Z M2.25121472,9.56547833 C2.25121472,10.0226218 2.55310358,10.3245107 2.99298868,10.3245107 L13.0242308,10.3245107 C13.4727539,10.3245107 13.7660048,10.0226218 13.7660048,9.56547833 L13.7660048,8.39243962 C13.7660048,7.93529616 13.4727539,7.64202765 13.0242308,7.64202765 L2.99298868,7.64202765 C2.55310358,7.64202765 2.25121472,7.93529616 2.25121472,8.39243962 L2.25121472,9.56547833 Z" id="Shape"></path>
+                    </svg></input></label>
+                <label><input id='orient-b' type='radio' name='o' value='b'
+                        title="Accessibility Preview Above Summary Below Summary">
+                    <svg width="17px" height="13px" viewBox="0 0 17 13" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <g id="rectangle.bottomthird.inset.fill" transform="translate(-1404.000000, -625.000000)"
+                                fill="#000000" fill-rule="nonzero">
+                                <g id="Symbols" transform="translate(487.079500, 622.660200)">
+                                    <g id="Regular-S" transform="translate(917.476120, 2.539000)">
+                                        <path
+                                            d="M2.1994573,12.5757157 L13.8005038,12.5757157 C15.2754314,12.5757157 16,11.8511886 16,10.4021291 L16,2.17358212 C16,0.724533261 15.2754314,0 13.8005038,0 L2.1994573,0 C0.733150077,0 3.13787208e-16,0.724533261 3.13787208e-16,2.17358212 L3.13787208e-16,10.4021291 C3.13787208e-16,11.8511886 0.733150077,12.5757157 2.1994573,12.5757157 Z M2.21671566,11.3250452 C1.59567958,11.3250452 1.24205096,10.997283 1.24205096,10.3417513 L1.24205096,2.23395989 C1.24205096,1.58706276 1.59567958,1.25067484 2.21671566,1.25067484 L13.7832631,1.25067484 C14.4042816,1.25067484 14.7579102,1.58706276 14.7579102,2.23395989 L14.7579102,10.3417513 C14.7579102,10.997283 14.4042816,11.3250452 13.7832631,11.3250452 L2.21671566,11.3250452 Z M2.25121472,9.56547833 C2.25121472,10.0226218 2.55310358,10.3245107 2.99298868,10.3245107 L13.0242308,10.3245107 C13.4727539,10.3245107 13.7660048,10.0226218 13.7660048,9.56547833 L13.7660048,8.39243962 C13.7660048,7.93529616 13.4727539,7.64202765 13.0242308,7.64202765 L2.99298868,7.64202765 C2.55310358,7.64202765 2.25121472,7.93529616 2.25121472,8.39243962 L2.25121472,9.56547833 Z"
+                                            id="Shape"></path>
+                                    </g>
                                 </g>
                             </g>
                         </g>
-                    </g>
-                </svg></input></label>
-            <label><input id='orient-h' type='radio' name='o' value='h' title="metadata hidden">
-                <svg width="17px" height="14px" viewBox="0 0 17 14" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-                        <g id="rectangle.center.inset.fill" transform="translate(-1701.000000, -624.000000)" fill="#000000" fill-rule="nonzero">
-                            <g id="Symbols" transform="translate(487.079500, 622.660200)">
-                                <g id="Medium-S" transform="translate(1213.996120, 2.099600)">
-                                    <path d="M2.27591424,12.6763805 L13.7155692,12.6763805 C15.2271255,12.6763805 16,11.9120194 16,10.4262344 L16,2.25013241 C16,0.764361515 15.2271255,0 13.7155692,0 L2.27591424,0 C0.781542368,0 3.12441909e-16,0.764361515 3.12441909e-16,2.25013241 L3.12441909e-16,10.4262344 C3.12441909e-16,11.9120194 0.781542368,12.6763805 2.27591424,12.6763805 Z M2.36180092,11.2163637 C1.78637954,11.2163637 1.46001721,10.9071822 1.46001721,10.2974132 L1.46001721,2.37897122 C1.46001721,1.76919869 1.78637954,1.46000314 2.36180092,1.46000314 L13.6382835,1.46000314 C14.2137049,1.46000314 14.5314662,1.76919869 14.5314662,2.37897122 L14.5314662,10.2974132 C14.5314662,10.9071822 14.2137049,11.2163637 13.6382835,11.2163637 L2.36180092,11.2163637 Z M3.88192297,8.43374442 C3.88192297,8.90609476 4.19111852,9.21527272 4.64628448,9.21527272 L11.3537824,9.21527272 C11.8089659,9.21527272 12.1181439,8.90609476 12.1181439,8.43374442 L12.1181439,4.24263997 C12.1181439,3.77027205 11.8089659,3.46109409 11.3537824,3.46109409 L4.64628448,3.46109409 C4.19111852,3.46109409 3.88192297,3.77027205 3.88192297,4.24263997 L3.88192297,8.43374442 Z" id="Shape"></path>
+                    </svg></input></label>
+                <label><input id='orient-h' type='radio' name='o' value='h' title="metadata hidden">
+                    <svg width="17px" height="14px" viewBox="0 0 17 14" version="1.1" xmlns="http://www.w3.org/2000/svg"
+                        xmlns:xlink="http://www.w3.org/1999/xlink">
+                        <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+                            <g id="rectangle.center.inset.fill" transform="translate(-1701.000000, -624.000000)"
+                                fill="#000000" fill-rule="nonzero">
+                                <g id="Symbols" transform="translate(487.079500, 622.660200)">
+                                    <g id="Medium-S" transform="translate(1213.996120, 2.099600)">
+                                        <path
+                                            d="M2.27591424,12.6763805 L13.7155692,12.6763805 C15.2271255,12.6763805 16,11.9120194 16,10.4262344 L16,2.25013241 C16,0.764361515 15.2271255,0 13.7155692,0 L2.27591424,0 C0.781542368,0 3.12441909e-16,0.764361515 3.12441909e-16,2.25013241 L3.12441909e-16,10.4262344 C3.12441909e-16,11.9120194 0.781542368,12.6763805 2.27591424,12.6763805 Z M2.36180092,11.2163637 C1.78637954,11.2163637 1.46001721,10.9071822 1.46001721,10.2974132 L1.46001721,2.37897122 C1.46001721,1.76919869 1.78637954,1.46000314 2.36180092,1.46000314 L13.6382835,1.46000314 C14.2137049,1.46000314 14.5314662,1.76919869 14.5314662,2.37897122 L14.5314662,10.2974132 C14.5314662,10.9071822 14.2137049,11.2163637 13.6382835,11.2163637 L2.36180092,11.2163637 Z M3.88192297,8.43374442 C3.88192297,8.90609476 4.19111852,9.21527272 4.64628448,9.21527272 L11.3537824,9.21527272 C11.8089659,9.21527272 12.1181439,8.90609476 12.1181439,8.43374442 L12.1181439,4.24263997 C12.1181439,3.77027205 11.8089659,3.46109409 11.3537824,3.46109409 L4.64628448,3.46109409 C4.19111852,3.46109409 3.88192297,3.77027205 3.88192297,4.24263997 L3.88192297,8.43374442 Z"
+                                            id="Shape"></path>
+                                    </g>
                                 </g>
                             </g>
                         </g>
-                    </g>
-                </svg></input></label>
+                    </svg></input></label>
 
                 <hr />
-            <input id="searchField" style="width: 37vw;" placeholder="Search terms" name="q" autofocus type="text"
-                aria-autocomplete="both" aria-haspopup="false" autocapitalize="off" autocomplete="off" autocorrect="off"
-                role="combobox" spellcheck="false" aria-label="Search" title="Individual search terms separated by spaces" />
-            <input id="searchSubmit" type="submit" name="ok" value="Search" style="width: 10vw; padding-right: 1wv;" title="Search" />
-            <input id="snippetLengthField" style="width: 4em" name="s" placeholder="sniplength" title="The length of the accessible text snippet in characters" />
-            <input id="resultsLimitField" style="width: 4em" name="l" placeholder="limit" title="The number of results per batch" />
-            <input id="mimeTypeField" style="width: 6em" name="m" placeholder="type" title="The MIME type of file to search for, such as text/html or application/pdf" />
-            <input id="resultsDomainField" style="width: 10em" name="d" placeholder="host" title="The domain name constraint" />
+                <input id="searchField" style="width: 37vw;" placeholder="Search terms" name="q" autofocus type="text"
+                    aria-autocomplete="both" aria-haspopup="false" autocapitalize="off" autocomplete="off"
+                    autocorrect="off" role="combobox" spellcheck="false" aria-label="Search"
+                    title="Individual search terms separated by spaces" />
+                <input id="searchSubmit" type="submit" name="ok" value="Search" style="width: 10vw; padding-right: 1wv;"
+                    title="Search" />
+                <input id="snippetLengthField" style="width: 4em" name="s" placeholder="sniplength"
+                    title="The length of the accessible text snippet in characters" />
+                <input id="resultsLimitField" style="width: 4em" name="l" placeholder="limit"
+                    title="The number of results per batch" />
+                <input id="mimeTypeField" style="width: 6em" name="m" placeholder="type"
+                    title="The MIME type of file to search for, such as text/html or application/pdf" />
+                <input id="resultsDomainField" style="width: 10em" name="d" placeholder="host"
+                    title="The domain name constraint" />
 
-            <input id="summary" placeholder="OK: Ready" disabled />
-            <input id="token" type="hidden" name="t" />
-            <input id="countOnly" type="checkbox" name="c" value="1" style="display: none;" />
-            <input id="unindexed" type="checkbox" name="x" value="1" style="display: none;" />
+                <input id="summary" placeholder="OK: Ready" disabled />
+                <input id="token" type="hidden" name="t" />
+                <input id="countOnly" type="checkbox" name="c" value="1" style="display: none;" />
+                <input id="unindexed" type="checkbox" name="x" value="1" style="display: none;" />
+            </div> <!-- searchfields -->
         </form>
     </div>
-    <hr />
 
     <div id="message">
     </div>
@@ -315,7 +363,8 @@
     </div>
 
     <div class="continuationSection">
-        <input id="continuationButton" type="button" value="Load More" hidden onclick="performSearch(window.continuationResponse)" />
+        <input id="continuationButton" type="button" value="Load More" hidden
+            onclick="performSearch(window.continuationResponse)" />
     </div>
 
     <!-- <div id="auth">
@@ -556,7 +605,7 @@
                 addSnippetSection('autoWidth');
             }
 
-            
+
             html += "</div>"; // searchResult
             return html;
         }
@@ -579,7 +628,7 @@
             if (countOnly === true) {
                 console.log("countOnly");
                 defaultResultsLimit = '999';
-                desiredKeys = ["indexDate"]; 
+                desiredKeys = ["indexDate"];
             }
 
             const unindexed = params.get('x') === '1';
@@ -680,14 +729,14 @@
             let div = element('results');
             if (isContinuation !== true) {
                 div.innerHTML = ""; // clear the current results unless this is a continuation
-            } 
-            
+            }
+
             let recordResults = [];
             let deferElementRender = 0; // 300; // the number of ms before we show the elements
             let snippetRenderTime = 1; // 200; // the initial snippet delay; incremented by deferSnippetRender
             let deferSnippetRender = 0; // 800; // the number of ms before we fill in the snippets textarea
 
-            const handleResponse = function(response) {
+            const handleResponse = function (response) {
                 //console.log("record count", response.records.length);
                 //console.log("receive response", response, response.records);
 
@@ -766,8 +815,8 @@
 
                 function gotoAuthenticatedState(userIdentity) {
                     let name = userIdentity.nameComponents;
-                    
-                    if(name) {
+
+                    if (name) {
                         // element('message').innerHTML = ('Welcome, ' + name.givenName);    
                     } else {
                         // element('message').innerHTML = ('Welcome!');
@@ -778,8 +827,8 @@
 
                 function gotoUnauthenticatedState(error) {
 
-                    if(error && error.ckErrorCode === 'AUTH_PERSIST_ERROR') {
-                    window.showDialogForPersistError();
+                    if (error && error.ckErrorCode === 'AUTH_PERSIST_ERROR') {
+                        window.showDialogForPersistError();
                     }
 
                     element('message').innerHTML = ("Apple <a href='https://www.apple.com/icloud/'>iCloud</a> login required.");
@@ -792,18 +841,18 @@
 
                 // CloudKit.getDefaultContainer().setUpAuth().then(function(userInfo) {
                 //     console.log("setupAuth:", userInfo);
-                    if (ok) {
-                        element('summary').placeholder = 'OK: Searching………';
-                        document.title = "OK: " + (params.get('q') || 'Search');
-                        setTimeout(performSearch, 0);
-                    }
+                if (ok) {
+                    element('summary').placeholder = 'OK: Searching………';
+                    document.title = "OK: " + (params.get('q') || 'Search');
+                    setTimeout(performSearch, 0);
+                }
                 // });
 
             } catch (e) {
                 console.error("error loading cloudkit", e);
             }
         };
-        
+
         window.addEventListener('cloudkitloaded', initCloudKit);
     </script>
     <script async src="https://cdn.apple-cloudkit.com/ck/2/cloudkit.js"></script>
