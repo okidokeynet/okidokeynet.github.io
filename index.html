@@ -662,7 +662,7 @@
 
             let snip = params.get('s');
             element('snippetLengthField').value = snip;
-            let snipLength = Number.max; // 1024 * 10; // Number.max;
+            let snipLength = 1024 * 10; // Number.max;
             if (typeof slen === 'string' && parseInt(slen) > 0) {
                 snipLength = Math.max(1, parseInt(slen));
                 console.log("snipLength", snipLength);
